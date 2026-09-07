@@ -44,7 +44,7 @@
 <div id="root"></div>
 
 <script type="text/babel">
-const { useState, useEffect, useMemo } = React;
+const { useState, useEffect, useMemo, useRef } = React;
 
 const SUPABASE_URL = 'https://empvklffqwrlllovhgzx.supabase.co';
 const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_an1FqOGAgwRQCzxp6UWuvQ_TFadZ9EW';
@@ -139,6 +139,8 @@ function normalizeProject(p) {
     return {
         ...p,
         steamLink: p.steamLink != null ? p.steamLink : (p.steam_url != null ? p.steam_url : ''),
+        bg_url: p.bg_url || '',
+        logo_url: p.logo_url || '',
         details: p.details != null ? p.details : '',
         pinnedReviews: p.pinnedReviews != null ? p.pinnedReviews : (p.pinned_reviews != null ? p.pinned_reviews : []),
         pinned: !!p.pinned,
@@ -382,6 +384,8 @@ function App() {
                 const payload={
                     title:data.title.trim(),
                     steam_url:data.steamLink ? data.steamLink.trim() : null,
+                    bg_url:data.bg_url ? data.bg_url.trim() : null,
+                    logo_url:data.logo_url ? data.logo_url.trim() : null,
                     details:data.details||'',
                     pinned_reviews:data.pinnedReviews||[],
                     pinned: !!data.pinned,
@@ -499,8 +503,8 @@ function PortfolioTab({projects,reviews,isAdmin,onChanged,onError,openProjectMod
         <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 items-stretch">
             {sortedProjects.map((proj, idx)=>{
                 const appId=getSteamAppId(proj.steamLink);
-                const bannerUrl=appId?`https://cdn.cloudflare.steamstatic.com/steam/apps/${appId}/library_hero.jpg`:null;
-                const logoUrl=appId?`https://cdn.cloudflare.steamstatic.com/steam/apps/${appId}/logo.png`:null;
+                const bannerUrl = proj.bg_url || (appId ? `https://cdn.cloudflare.steamstatic.com/steam/apps/${appId}/library_hero.jpg` : null);
+                const logoUrl = proj.logo_url || (appId ? `https://cdn.cloudflare.steamstatic.com/steam/apps/${appId}/logo.png` : null);
                 
                 return <div key={proj.id} className={`glass rounded-xl overflow-hidden shadow-2xl flex flex-col h-full border ${proj.pinned ? 'border-accent shadow-[0_0_20px_rgba(6,182,212,0.15)]' : 'border-gray-700'} relative`}>
                     
@@ -846,7 +850,9 @@ function ProjectFormModal({project,reviews,onSave,onCancel}){
         bg_offset_x:project.bg_offset_x||0,
         bg_offset_y:project.bg_offset_y||0,
         logo_offset_x:project.logo_offset_x||0,
-        logo_offset_y:project.logo_offset_y||0
+        logo_offset_y:project.logo_offset_y||0,
+        bg_url:project.bg_url||'',
+        logo_url:project.logo_url||''
     }:{
         title:'',
         steamLink:'',
@@ -857,24 +863,117 @@ function ProjectFormModal({project,reviews,onSave,onCancel}){
         bg_offset_x:0,
         bg_offset_y:0,
         logo_offset_x:0,
-        logo_offset_y:0
+        logo_offset_y:0,
+        bg_url:'',
+        logo_url:''
     });
-    const togglePin=revId=>setFormData(f=>({...f,pinnedReviews:f.pinnedReviews.includes(revId)?f.pinnedReviews.filter(id=>id!==revId):[...f.pinnedReviews,revId]}));
-    const handleSubmit=e=>{e.preventDefault();if(!formData.title.trim())return alert('Title is required.');onSave(formData)};
-    return <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-[200] p-4 overflow-y-auto">
+
+    const [uploadingBg, setUploadingBg] = useState(false);
+    const [uploadingLogo, setUploadingLogo] = useState(false);
+    const [drag, setDrag] = useState({ target: null, startX: 0, startY: 0, initX: 0, initY: 0 });
+
+    const appId = getSteamAppId(formData.steamLink);
+    const fallbackBg = appId ? `https://cdn.cloudflare.steamstatic.com/steam/apps/${appId}/library_hero.jpg` : '';
+    const fallbackLogo = appId ? `https://cdn.cloudflare.steamstatic.com/steam/apps/${appId}/logo.png` : '';
+    
+    const displayBg = formData.bg_url || fallbackBg;
+    const displayLogo = formData.logo_url || fallbackLogo;
+
+    const uploadAsset = async (file, type) => {
+        const client = getSupabase();
+        if(!file||!client) return;
+        if(file.size > 8*1024*1024) return alert('Plik za duży (max 8MB)');
+        const setLoad = type==='bg' ? setUploadingBg : setUploadingLogo;
+        setLoad(true);
+        const path = `project-${type}-${crypto.randomUUID()}-${file.name.toLowerCase().replace(/[^a-z0-9._-]/g,'-')}`;
+        const {error} = await client.storage.from('project-assets').upload(path, file);
+        if(error) { setLoad(false); return alert(error.message); }
+        const {data} = client.storage.from('project-assets').getPublicUrl(path);
+        setFormData(f => ({...f, [type==='bg' ? 'bg_url' : 'logo_url']: data.publicUrl}));
+        setLoad(false);
+    };
+
+    const handleMouseDown = (e, target) => {
+        e.preventDefault();
+        setDrag({
+            target,
+            startX: e.clientX,
+            startY: e.clientY,
+            initX: target === 'bg' ? formData.bg_offset_x : formData.logo_offset_x,
+            initY: target === 'bg' ? formData.bg_offset_y : formData.logo_offset_y,
+        });
+    };
+
+    const handleMouseMove = (e) => {
+        if (!drag.target) return;
+        const dx = e.clientX - drag.startX;
+        const dy = e.clientY - drag.startY;
+        if (drag.target === 'bg') {
+            setFormData(f => ({ ...f, bg_offset_x: drag.initX + dx, bg_offset_y: drag.initY + dy }));
+        } else {
+            setFormData(f => ({ ...f, logo_offset_x: drag.initX + dx, logo_offset_y: drag.initY + dy }));
+        }
+    };
+
+    const handleMouseUp = () => setDrag({ target: null, startX: 0, startY: 0, initX: 0, initY: 0 });
+    const togglePin = revId => setFormData(f=>({...f,pinnedReviews:f.pinnedReviews.includes(revId)?f.pinnedReviews.filter(id=>id!==revId):[...f.pinnedReviews,revId]}));
+    const handleSubmit = e => {e.preventDefault();if(!formData.title.trim())return alert('Title is required.');onSave(formData)};
+
+    return <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-[200] p-4 overflow-y-auto" onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp} onMouseMove={handleMouseMove}>
         <div className="glass p-8 rounded-xl w-full max-w-2xl border border-gray-700 my-8 shadow-2xl">
             <h2 className="text-2xl font-bold mb-6 text-accent">{project?'Edit project':'New project'}</h2>
             <form onSubmit={handleSubmit} className="space-y-4">
                 <Field label="Game Title"><input type="text" value={formData.title} onChange={e=>setFormData({...formData,title:e.target.value})} className="form-input" required/></Field>
                 <Field label="Steam Link"><input type="url" value={formData.steamLink} onChange={e=>setFormData({...formData,steamLink:e.target.value})} className="form-input" placeholder="https://store.steampowered.com/app/..." /></Field>
-                <div className="grid grid-cols-2 gap-4 border border-gray-700 p-4 rounded bg-gray-900">
-                    <label className="block text-sm font-bold text-accent col-span-2 mb-[-10px]">Przesunięcie obrazków (piksele)</label>
-                    <Field label="Tło (X - Lewo/Prawo)"><input type="number" value={formData.bg_offset_x} onChange={e=>setFormData({...formData,bg_offset_x:e.target.value})} className="form-input" /></Field>
-                    <Field label="Tło (Y - Góra/Dół)"><input type="number" value={formData.bg_offset_y} onChange={e=>setFormData({...formData,bg_offset_y:e.target.value})} className="form-input" /></Field>
-                    <Field label="Logo (X - Lewo/Prawo)"><input type="number" value={formData.logo_offset_x} onChange={e=>setFormData({...formData,logo_offset_x:e.target.value})} className="form-input" /></Field>
-                    <Field label="Logo (Y - Góra/Dół)"><input type="number" value={formData.logo_offset_y} onChange={e=>setFormData({...formData,logo_offset_y:e.target.value})} className="form-input" /></Field>
+                
+                <div className="grid grid-cols-2 gap-4">
+                    <Field label="Custom Banner (Tło)">
+                        <input type="file" accept="image/*" disabled={uploadingBg} onChange={e=>uploadAsset(e.target.files[0], 'bg')} className="w-full bg-gray-900 border border-gray-700 rounded p-1 text-white text-sm font-bold"/>
+                        {uploadingBg&&<p className="text-xs text-gray-500 mt-1 font-bold">Uploading…</p>}
+                    </Field>
+                    <Field label="Custom Logo">
+                        <input type="file" accept="image/*" disabled={uploadingLogo} onChange={e=>uploadAsset(e.target.files[0], 'logo')} className="w-full bg-gray-900 border border-gray-700 rounded p-1 text-white text-sm font-bold"/>
+                        {uploadingLogo&&<p className="text-xs text-gray-500 mt-1 font-bold">Uploading…</p>}
+                    </Field>
                 </div>
+
+                <div className="border border-gray-700 rounded bg-gray-900 mt-4 overflow-hidden shadow-inner">
+                    <div className="px-3 py-2 bg-gray-800 border-b border-gray-700 flex justify-between items-center">
+                        <span className="text-xs font-bold text-gray-400">Przesuń elementy myszką (Drag & Drop)</span>
+                        <div className="flex gap-2">
+                            <span className="text-[10px] text-accent">Tło: {formData.bg_offset_x}px, {formData.bg_offset_y}px</span>
+                            <span className="text-[10px] text-accent">Logo: {formData.logo_offset_x}px, {formData.logo_offset_y}px</span>
+                        </div>
+                    </div>
+                    
+                    <div 
+                        className="relative w-full h-48 bg-[#020617] overflow-hidden cursor-move select-none"
+                        onMouseDown={(e) => handleMouseDown(e, 'bg')}
+                        style={{
+                            backgroundImage: displayBg ? `url(${displayBg})` : 'none',
+                            backgroundPosition: `calc(50% + ${formData.bg_offset_x}px) calc(50% + ${formData.bg_offset_y}px)`,
+                            backgroundSize: 'cover',
+                            backgroundRepeat: 'no-repeat'
+                        }}
+                    >
+                        <div className="absolute inset-0 bg-gradient-to-t from-[#020617] via-[#020617]/80 to-transparent pointer-events-none"></div>
+                        <div className="p-6 relative z-10 flex flex-col h-full pointer-events-none">
+                            {displayLogo && (
+                                <img
+                                    src={displayLogo}
+                                    alt="Logo"
+                                    className="max-h-16 max-w-[180px] object-contain drop-shadow-md pointer-events-auto cursor-move"
+                                    style={{ transform: `translate(${formData.logo_offset_x}px, ${formData.logo_offset_y}px)` }}
+                                    onMouseDown={(e) => { e.stopPropagation(); handleMouseDown(e, 'logo'); }}
+                                    draggable={false}
+                                />
+                            )}
+                        </div>
+                    </div>
+                </div>
+
                 <Field label="Translation details"><textarea value={formData.details} onChange={e=>setFormData({...formData,details:e.target.value})} className="form-input h-32 font-medium" /></Field>
+                
                 <div className="flex items-center gap-6">
                     <label className="flex items-center gap-2 cursor-pointer text-white font-bold text-sm">
                         <input type="checkbox" checked={formData.pinned} onChange={e=>setFormData({...formData,pinned:e.target.checked})} className="w-4 h-4 accent-accent rounded"/>
@@ -889,7 +988,7 @@ function ProjectFormModal({project,reviews,onSave,onCancel}){
                     </div>
                 </div>
                 <div className="flex gap-4 pt-4 border-t border-gray-700">
-                    <button type="submit" className="flex-1 bg-accent hover:bg-cyan-400 text-darker font-bold py-2 rounded">Save project</button>
+                    <button type="submit" disabled={uploadingBg || uploadingLogo} className="flex-1 bg-accent hover:bg-cyan-400 text-darker font-bold py-2 rounded">Save project</button>
                     <button type="button" onClick={onCancel} className="flex-1 bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 rounded">Cancel</button>
                 </div>
             </form>
