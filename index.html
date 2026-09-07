@@ -142,7 +142,11 @@ function normalizeProject(p) {
         details: p.details != null ? p.details : '',
         pinnedReviews: p.pinnedReviews != null ? p.pinnedReviews : (p.pinned_reviews != null ? p.pinned_reviews : []),
         pinned: !!p.pinned,
-        sort_order: p.sort_order != null ? Number(p.sort_order) : 0
+        sort_order: p.sort_order != null ? Number(p.sort_order) : 0,
+        bg_offset_x: Number(p.bg_offset_x) || 0,
+        bg_offset_y: Number(p.bg_offset_y) || 0,
+        logo_offset_x: Number(p.logo_offset_x) || 0,
+        logo_offset_y: Number(p.logo_offset_y) || 0
     };
 }
 
@@ -381,7 +385,11 @@ function App() {
                     details:data.details||'',
                     pinned_reviews:data.pinnedReviews||[],
                     pinned: !!data.pinned,
-                    sort_order: Number(data.sort_order) || 0
+                    sort_order: Number(data.sort_order) || 0,
+                    bg_offset_x: Number(data.bg_offset_x) || 0,
+                    bg_offset_y: Number(data.bg_offset_y) || 0,
+                    logo_offset_x: Number(data.logo_offset_x) || 0,
+                    logo_offset_y: Number(data.logo_offset_y) || 0
                 };
                 const result=modal.data ? await client.from('projects').update(payload).eq('id',modal.data.id) : await client.from('projects').insert(payload);
                 if(result.error){setError(result.error.message);return;}
@@ -466,13 +474,11 @@ function PortfolioTab({projects,reviews,isAdmin,onChanged,onError,openProjectMod
         const targetIdx = sortedIdx + direction;
         if (targetIdx < 0 || targetIdx >= sortedProjects.length) return;
 
-        // Perform swap on the visually sorted array
         const newSorted = [...sortedProjects];
         const temp = newSorted[sortedIdx];
         newSorted[sortedIdx] = newSorted[targetIdx];
         newSorted[targetIdx] = temp;
 
-        // Apply new indexes as sort_order to all projects
         for (let i = 0; i < newSorted.length; i++) {
             await client.from('projects').update({ sort_order: i }).eq('id', newSorted[i].id);
         }
@@ -490,7 +496,6 @@ function PortfolioTab({projects,reviews,isAdmin,onChanged,onError,openProjectMod
         
         {sortedProjects.length===0?<p className="text-gray-500 text-xl font-bold text-center mt-12">No projects added.</p>:
         
-        /* Grid Layout replaces the vertical stack */
         <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 items-stretch">
             {sortedProjects.map((proj, idx)=>{
                 const appId=getSteamAppId(proj.steamLink);
@@ -499,11 +504,11 @@ function PortfolioTab({projects,reviews,isAdmin,onChanged,onError,openProjectMod
                 
                 return <div key={proj.id} className={`glass rounded-xl overflow-hidden shadow-2xl flex flex-col h-full border ${proj.pinned ? 'border-accent shadow-[0_0_20px_rgba(6,182,212,0.15)]' : 'border-gray-700'} relative`}>
                     
-                    {bannerUrl&&<div className="absolute inset-0 z-0 opacity-20 pointer-events-none bg-cover bg-center" style={{backgroundImage:`url(${bannerUrl})`}}><div className="absolute inset-0 bg-gradient-to-t from-darker via-darker/80 to-transparent"></div></div>}
+                    {bannerUrl&&<div className="absolute inset-0 z-0 opacity-20 pointer-events-none bg-cover bg-no-repeat" style={{backgroundImage:`url(${bannerUrl})`, backgroundPosition:`calc(50% + ${proj.bg_offset_x}px) calc(50% + ${proj.bg_offset_y}px)`}}><div className="absolute inset-0 bg-gradient-to-t from-darker via-darker/80 to-transparent"></div></div>}
                     
                     <div className="p-6 relative z-10 flex-grow flex flex-col">
                         <div className="flex flex-col items-start gap-4 mb-4">
-                            {logoUrl&&<img src={logoUrl} alt="Logo" className="max-h-16 max-w-[180px] object-contain drop-shadow-md" onError={e=>e.currentTarget.style.display='none'} />}
+                            {logoUrl&&<img src={logoUrl} alt="Logo" className="max-h-16 max-w-[180px] object-contain drop-shadow-md" style={{transform:`translate(${proj.logo_offset_x}px, ${proj.logo_offset_y}px)`}} onError={e=>e.currentTarget.style.display='none'} />}
                             <div className="w-full">
                                 <div className="flex items-start justify-between gap-2">
                                     <h3 className="text-2xl font-bold text-white mb-1 leading-tight">{proj.title}</h3>
@@ -833,7 +838,27 @@ function ReviewFormModal({review,onSave,onCancel,onError}){
 }
 
 function ProjectFormModal({project,reviews,onSave,onCancel}){
-    const [formData,setFormData]=useState(()=>project?{...project,pinnedReviews:project.pinnedReviews||[],pinned:!!project.pinned,sort_order:project.sort_order||0}:{title:'',steamLink:'',details:'',pinnedReviews:[],pinned:false,sort_order:0});
+    const [formData,setFormData]=useState(()=>project?{
+        ...project,
+        pinnedReviews:project.pinnedReviews||[],
+        pinned:!!project.pinned,
+        sort_order:project.sort_order||0,
+        bg_offset_x:project.bg_offset_x||0,
+        bg_offset_y:project.bg_offset_y||0,
+        logo_offset_x:project.logo_offset_x||0,
+        logo_offset_y:project.logo_offset_y||0
+    }:{
+        title:'',
+        steamLink:'',
+        details:'',
+        pinnedReviews:[],
+        pinned:false,
+        sort_order:0,
+        bg_offset_x:0,
+        bg_offset_y:0,
+        logo_offset_x:0,
+        logo_offset_y:0
+    });
     const togglePin=revId=>setFormData(f=>({...f,pinnedReviews:f.pinnedReviews.includes(revId)?f.pinnedReviews.filter(id=>id!==revId):[...f.pinnedReviews,revId]}));
     const handleSubmit=e=>{e.preventDefault();if(!formData.title.trim())return alert('Title is required.');onSave(formData)};
     return <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-[200] p-4 overflow-y-auto">
@@ -842,6 +867,13 @@ function ProjectFormModal({project,reviews,onSave,onCancel}){
             <form onSubmit={handleSubmit} className="space-y-4">
                 <Field label="Game Title"><input type="text" value={formData.title} onChange={e=>setFormData({...formData,title:e.target.value})} className="form-input" required/></Field>
                 <Field label="Steam Link"><input type="url" value={formData.steamLink} onChange={e=>setFormData({...formData,steamLink:e.target.value})} className="form-input" placeholder="https://store.steampowered.com/app/..." /></Field>
+                <div className="grid grid-cols-2 gap-4 border border-gray-700 p-4 rounded bg-gray-900">
+                    <label className="block text-sm font-bold text-accent col-span-2 mb-[-10px]">Przesunięcie obrazków (piksele)</label>
+                    <Field label="Tło (X - Lewo/Prawo)"><input type="number" value={formData.bg_offset_x} onChange={e=>setFormData({...formData,bg_offset_x:e.target.value})} className="form-input" /></Field>
+                    <Field label="Tło (Y - Góra/Dół)"><input type="number" value={formData.bg_offset_y} onChange={e=>setFormData({...formData,bg_offset_y:e.target.value})} className="form-input" /></Field>
+                    <Field label="Logo (X - Lewo/Prawo)"><input type="number" value={formData.logo_offset_x} onChange={e=>setFormData({...formData,logo_offset_x:e.target.value})} className="form-input" /></Field>
+                    <Field label="Logo (Y - Góra/Dół)"><input type="number" value={formData.logo_offset_y} onChange={e=>setFormData({...formData,logo_offset_y:e.target.value})} className="form-input" /></Field>
+                </div>
                 <Field label="Translation details"><textarea value={formData.details} onChange={e=>setFormData({...formData,details:e.target.value})} className="form-input h-32 font-medium" /></Field>
                 <div className="flex items-center gap-6">
                     <label className="flex items-center gap-2 cursor-pointer text-white font-bold text-sm">
