@@ -22,7 +22,7 @@
                         accent: '#06b6d4'
                     },
                     animation: {
-                        scroll: 'scroll 30s linear infinite',
+                        'scroll': 'scroll 30s linear infinite',
                         'fade-in': 'fadeIn 0.25s ease-out forwards'
                     },
                     keyframes: {
@@ -91,15 +91,6 @@
             border-color: #06b6d4;
             outline: none;
         }
-
-        .project-preview {
-            position: relative;
-            min-height: 180px;
-            overflow: hidden;
-            border-radius: 0.75rem;
-            background: #020617;
-            border: 1px solid #374151;
-        }
     </style>
 </head>
 
@@ -108,16 +99,10 @@
 
 <script type="text/babel">
 
-const {
-    useState,
-    useEffect,
-    useMemo
-} = React;
+const { useState, useEffect, useMemo } = React;
 
 const SUPABASE_URL = 'https://empvklffqwrlllovhgzx.supabase.co';
-
-const SUPABASE_PUBLISHABLE_KEY =
-    'sb_publishable_an1FqOGAgwRQCzxp6UWuvQ_TFadZ9EW';
+const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_an1FqOGAgwRQCzxp6UWuvQ_TFadZ9EW';
 
 let supabaseClient = null;
 
@@ -128,7 +113,6 @@ if (localStorage.getItem(REMEMBER_KEY) === null) {
 }
 
 const authStorage = {
-
     getItem: (key) => {
         try {
             return localStorage.getItem(REMEMBER_KEY) === 'true'
@@ -158,17 +142,13 @@ const authStorage = {
 };
 
 function getSupabase() {
-
-    if (supabaseClient) {
-        return supabaseClient;
-    }
+    if (supabaseClient) return supabaseClient;
 
     if (
         window.supabase &&
         typeof window.supabase.createClient === 'function'
     ) {
         try {
-
             supabaseClient = window.supabase.createClient(
                 SUPABASE_URL,
                 SUPABASE_PUBLISHABLE_KEY,
@@ -183,7 +163,6 @@ function getSupabase() {
             );
 
             return supabaseClient;
-
         } catch (e) {
             return null;
         }
@@ -193,47 +172,27 @@ function getSupabase() {
 }
 
 const defaultCategories = [
-    {
-        category: 'Speed',
-        value: 5
-    },
-    {
-        category: 'Communication',
-        value: 5
-    },
-    {
-        category: 'Professionalism',
-        value: 5
-    },
-    {
-        category: 'Reliability',
-        value: 5
-    }
+    { category: 'Speed', value: 5 },
+    { category: 'Communication', value: 5 },
+    { category: 'Professionalism', value: 5 },
+    { category: 'Reliability', value: 5 }
 ];
 
 function renderStars(rating) {
-
     const value = Number(rating) || 0;
     const stars = [];
 
     for (let i = 1; i <= 5; i++) {
-
         if (i <= Math.floor(value)) {
-
             stars.push(
-                <span
-                    key={i}
-                    className="text-yellow-400"
-                >
+                <span key={i} className="text-yellow-400">
                     ★
                 </span>
             );
-
         } else if (
             i === Math.ceil(value) &&
             value % 1 !== 0
         ) {
-
             const percentage = (value % 1) * 100;
 
             stars.push(
@@ -253,14 +212,9 @@ function renderStars(rating) {
                     </span>
                 </span>
             );
-
         } else {
-
             stars.push(
-                <span
-                    key={i}
-                    className="text-gray-600"
-                >
+                <span key={i} className="text-gray-600">
                     ★
                 </span>
             );
@@ -275,7 +229,6 @@ function renderStars(rating) {
 }
 
 function calculateAverageRating(ratings) {
-
     if (
         !Array.isArray(ratings) ||
         ratings.length === 0
@@ -287,9 +240,7 @@ function calculateAverageRating(ratings) {
         .map(r => Number(r.value))
         .filter(Number.isFinite);
 
-    if (!values.length) {
-        return 0;
-    }
+    if (!values.length) return 0;
 
     return (
         values.reduce((a, b) => a + b, 0) /
@@ -298,10 +249,7 @@ function calculateAverageRating(ratings) {
 }
 
 function formatDate(dateString) {
-
-    if (!dateString) {
-        return '';
-    }
+    if (!dateString) return '';
 
     return new Date(dateString).toLocaleDateString(
         'en-US',
@@ -314,29 +262,20 @@ function formatDate(dateString) {
 }
 
 function getSteamAppId(url) {
-
-    if (!url) {
-        return null;
-    }
+    if (!url) return null;
 
     const match = url.match(/\/app\/(\d+)/);
 
-    return match
-        ? match[1]
-        : null;
+    return match ? match[1] : null;
 }
 
 function avatarFallback(name) {
-
-    return (
-        `https://ui-avatars.com/api/?name=${
-            encodeURIComponent(name || 'User')
-        }&background=0f172a&color=fff`
-    );
+    return `https://ui-avatars.com/api/?name=${encodeURIComponent(
+        name || 'User'
+    )}&background=0f172a&color=fff`;
 }
 
 function normalizeProject(p) {
-
     return {
         ...p,
 
@@ -375,6 +314,11 @@ function normalizeProject(p) {
                 ? p.bg_url
                 : '',
 
+        logo_url:
+            p.logo_url != null
+                ? p.logo_url
+                : '',
+
         bg_offset_x:
             Number(p.bg_offset_x) || 0,
 
@@ -390,7 +334,6 @@ function normalizeProject(p) {
 }
 
 function normalizeReview(r) {
-
     return {
         ...r,
 
@@ -443,7 +386,6 @@ function normalizeReview(r) {
 }
 
 function normalizeCode(c) {
-
     return {
         ...c,
 
@@ -481,7 +423,6 @@ function App() {
     const [inviteCodes, setInviteCodes] = useState([]);
 
     const [isAdmin, setIsAdmin] = useState(false);
-
     const [session, setSession] = useState(null);
 
     const [activeTab, setActiveTab] =
@@ -496,21 +437,16 @@ function App() {
     const [toast, setToast] =
         useState('');
 
-    const [modal, setModal] =
-        useState({
-            type: null,
-            data: null
-        });
+    const [modal, setModal] = useState({
+        type: null,
+        data: null
+    });
 
-    const loadReviews = async (
-        adminView = isAdmin
-    ) => {
+    const loadReviews = async (adminView = isAdmin) => {
 
         const client = getSupabase();
 
-        if (!client) {
-            return;
-        }
+        if (!client) return;
 
         let query =
             client
@@ -518,9 +454,7 @@ function App() {
                 .select('*')
                 .order(
                     'created_at',
-                    {
-                        ascending: false
-                    }
+                    { ascending: false }
                 );
 
         if (!adminView) {
@@ -541,7 +475,9 @@ function App() {
         }
 
         setReviews(
-            (data || []).map(normalizeReview)
+            (data || []).map(
+                normalizeReview
+            )
         );
     };
 
@@ -549,9 +485,7 @@ function App() {
 
         const client = getSupabase();
 
-        if (!client) {
-            return;
-        }
+        if (!client) return;
 
         const {
             data,
@@ -561,15 +495,11 @@ function App() {
             .select('*')
             .order(
                 'sort_order',
-                {
-                    ascending: true
-                }
+                { ascending: true }
             )
             .order(
                 'created_at',
-                {
-                    ascending: false
-                }
+                { ascending: false }
             );
 
         if (error) {
@@ -578,7 +508,9 @@ function App() {
         }
 
         setProjects(
-            (data || []).map(normalizeProject)
+            (data || []).map(
+                normalizeProject
+            )
         );
     };
 
@@ -602,9 +534,7 @@ function App() {
             .eq('used', false)
             .order(
                 'created_at',
-                {
-                    ascending: false
-                }
+                { ascending: false }
             );
 
         if (error) {
@@ -613,7 +543,9 @@ function App() {
         }
 
         setInviteCodes(
-            (data || []).map(normalizeCode)
+            (data || []).map(
+                normalizeCode
+            )
         );
     };
 
@@ -628,13 +560,10 @@ function App() {
                 err.status === 0
             )
         ) {
-
             setError(
                 'Privacy extension is blocking Supabase connection. Disable adblocker for this site.'
             );
-
         } else if (err) {
-
             setError(
                 err.message
             );
@@ -652,9 +581,7 @@ function App() {
             !currentSession ||
             !currentSession.user
         ) {
-
             setIsAdmin(false);
-
             return false;
         }
 
@@ -706,7 +633,7 @@ function App() {
                             const {
                                 data: {
                                     session:
-                                    currentSession
+                                        currentSession
                                 }
                             } =
                                 await client.auth.getSession();
@@ -758,7 +685,7 @@ function App() {
                                         const {
                                             data: {
                                                 session:
-                                                currentSession
+                                                    currentSession
                                             }
                                         } =
                                             await c.auth.getSession();
@@ -817,15 +744,15 @@ function App() {
             );
 
         return () =>
-            clearInterval(checkLibrary);
+            clearInterval(
+                checkLibrary
+            );
 
     }, []);
 
     useEffect(() => {
 
-        if (!toast) {
-            return;
-        }
+        if (!toast) return;
 
         const t =
             setTimeout(
@@ -848,14 +775,16 @@ function App() {
         }
 
         setSession(null);
-
         setIsAdmin(false);
-
         setInviteCodes([]);
 
-        setActiveTab('reviews');
+        setActiveTab(
+            'reviews'
+        );
 
-        setToast('Logged out.');
+        setToast(
+            'Logged out.'
+        );
     };
 
     const handleLoginSuccess =
@@ -864,7 +793,9 @@ function App() {
             const client =
                 getSupabase();
 
-            setSession(newSession);
+            setSession(
+                newSession
+            );
 
             const admin =
                 await checkAdmin(
@@ -1038,6 +969,7 @@ function App() {
                 ) : (
 
                     <>
+
                         {activeTab === 'about' &&
                             <AboutMe />
                         }
@@ -1076,7 +1008,8 @@ function App() {
                             />
                         }
 
-                        {activeTab === 'admin' && isAdmin &&
+                        {activeTab === 'admin' &&
+                            isAdmin &&
                             <AdminTab
                                 reviews={reviews}
                                 inviteCodes={inviteCodes}
@@ -1099,6 +1032,7 @@ function App() {
                                 }
                             />
                         }
+
                     </>
 
                 )}
@@ -1123,7 +1057,9 @@ function App() {
                             t => now - t < 900
                         );
 
-                    window.__m3owlClicks.push(now);
+                    window.__m3owlClicks.push(
+                        now
+                    );
 
                     if (
                         window.__m3owlClicks.length >= 3
@@ -1144,7 +1080,9 @@ function App() {
             {modal.type === 'login' && (
 
                 <LoginModal
-                    onSuccess={handleLoginSuccess}
+                    onSuccess={
+                        handleLoginSuccess
+                    }
                     onCancel={() =>
                         setModal({
                             type: null,
@@ -1164,21 +1102,23 @@ function App() {
                             data: null
                         })
                     }
-                    onSubmitted={async () => {
+                    onSubmitted={
+                        async () => {
 
-                        setModal({
-                            type: null,
-                            data: null
-                        });
+                            setModal({
+                                type: null,
+                                data: null
+                            });
 
-                        await loadReviews(
-                            isAdmin
-                        );
+                            await loadReviews(
+                                isAdmin
+                            );
 
-                        setToast(
-                            'Feedback submitted. Awaiting approval.'
-                        );
-                    }}
+                            setToast(
+                                'Feedback submitted. Awaiting approval.'
+                            );
+                        }
+                    }
                     onError={setError}
                 />
 
@@ -1193,19 +1133,21 @@ function App() {
                             data: null
                         })
                     }
-                    onCreated={async () => {
+                    onCreated={
+                        async () => {
 
-                        setModal({
-                            type: null,
-                            data: null
-                        });
+                            setModal({
+                                type: null,
+                                data: null
+                            });
 
-                        await loadInviteCodes();
+                            await loadInviteCodes();
 
-                        setToast(
-                            'Code generated successfully.'
-                        );
-                    }}
+                            setToast(
+                                'Code generated successfully.'
+                            );
+                        }
+                    }
                     onError={setError}
                     onToast={setToast}
                 />
@@ -1216,23 +1158,29 @@ function App() {
 
                 <ReviewFormModal
                     review={modal.data}
-                    onSave={async () => {
+                    onSave={
+                        async () => {
 
-                        setModal({
-                            type: null,
-                            data: null
-                        });
+                            setModal({
+                                type: null,
+                                data: null
+                            });
 
-                        await loadReviews(
-                            true
-                        );
+                            await loadReviews(
+                                true
+                            );
 
-                        setToast(
-                            modal.data
-                                ? 'Updated.'
-                                : 'New feedback added.'
-                        );
-                    }}
+                            await loadReviews(
+                                false
+                            );
+
+                            setToast(
+                                modal.data
+                                    ? 'Updated.'
+                                    : 'New feedback added.'
+                            );
+                        }
+                    }
                     onCancel={() =>
                         setModal({
                             type: null,
@@ -1249,93 +1197,111 @@ function App() {
                 <ProjectFormModal
                     project={modal.data}
                     reviews={reviews}
-                    onSave={async (data) => {
+                    onSave={
+                        async data => {
 
-                        const client =
-                            getSupabase();
+                            const client =
+                                getSupabase();
 
-                        if (!client) {
-                            return;
-                        }
+                            if (!client) {
+                                return;
+                            }
 
-                        const payload = {
+                            const payload = {
+                                title:
+                                    data.title.trim(),
 
-                            title:
-                                data.title.trim(),
+                                steam_url:
+                                    data.steamLink
+                                        ? data.steamLink.trim()
+                                        : null,
 
-                            steam_url:
-                                data.steamLink
-                                    ? data.steamLink.trim()
-                                    : null,
+                                bg_url:
+                                    data.bg_url
+                                        ? data.bg_url.trim()
+                                        : null,
 
-                            bg_url:
-                                data.bg_url
-                                    ? data.bg_url.trim()
-                                    : null,
+                                logo_url:
+                                    data.logo_url
+                                        ? data.logo_url.trim()
+                                        : null,
 
-                            details:
-                                data.details || '',
+                                details:
+                                    data.details || '',
 
-                            pinned_reviews:
-                                data.pinnedReviews || [],
+                                pinned_reviews:
+                                    data.pinnedReviews || [],
 
-                            pinned:
-                                !!data.pinned,
+                                pinned:
+                                    !!data.pinned,
 
-                            sort_order:
-                                Number(data.sort_order) || 0,
+                                sort_order:
+                                    Number(
+                                        data.sort_order
+                                    ) || 0,
 
-                            bg_offset_x:
-                                Number(data.bg_offset_x) || 0,
+                                bg_offset_x:
+                                    Number(
+                                        data.bg_offset_x
+                                    ) || 0,
 
-                            bg_offset_y:
-                                Number(data.bg_offset_y) || 0,
+                                bg_offset_y:
+                                    Number(
+                                        data.bg_offset_y
+                                    ) || 0,
 
-                            logo_offset_x:
-                                Number(data.logo_offset_x) || 0,
+                                logo_offset_x:
+                                    Number(
+                                        data.logo_offset_x
+                                    ) || 0,
 
-                            logo_offset_y:
-                                Number(data.logo_offset_y) || 0
-                        };
+                                logo_offset_y:
+                                    Number(
+                                        data.logo_offset_y
+                                    ) || 0
+                            };
 
-                        const result =
-                            modal.data
+                            const result =
+                                modal.data
 
-                                ? await client
-                                    .from('projects')
-                                    .update(payload)
-                                    .eq(
-                                        'id',
-                                        modal.data.id
-                                    )
+                                    ? await client
+                                        .from('projects')
+                                        .update(payload)
+                                        .eq(
+                                            'id',
+                                            modal.data.id
+                                        )
 
-                                : await client
-                                    .from('projects')
-                                    .insert(payload);
+                                    : await client
+                                        .from('projects')
+                                        .insert(
+                                            payload
+                                        );
 
-                        if (result.error) {
+                            if (result.error) {
 
-                            setError(
-                                result.error.message
+                                setError(
+                                    result.error.message
+                                );
+
+                                return;
+                            }
+
+                            await loadProjects();
+
+                            setModal({
+                                type: null,
+                                data: null
+                            });
+
+                            setToast(
+                                modal.data
+                                    ? 'Project updated.'
+                                    : 'Project created.'
                             );
 
-                            return;
                         }
-
-                        await loadProjects();
-
-                        setModal({
-                            type: null,
-                            data: null
-                        });
-
-                        setToast(
-                            modal.data
-                                ? 'Project updated.'
-                                : 'Project created.'
-                        );
-
-                    }}
+                    }
                     onCancel={() =>
                         setModal({
                             type: null,
@@ -1400,14 +1366,11 @@ function LoginModal({
         }
 
         setBusy(true);
-
         setError('');
 
         localStorage.setItem(
             REMEMBER_KEY,
-            remember
-                ? 'true'
-                : 'false'
+            remember ? 'true' : 'false'
         );
 
         if (!remember) {
@@ -1437,24 +1400,18 @@ function LoginModal({
         setBusy(false);
 
         if (loginError) {
-
-            setError(
+            return setError(
                 loginError.message
             );
-
-            return;
         }
 
         if (
             !data ||
             !data.session
         ) {
-
-            setError(
+            return setError(
                 'Logged in, but no session returned.'
             );
-
-            return;
         }
 
         onSuccess(
@@ -1552,9 +1509,10 @@ function LoginModal({
                             type="submit"
                             className="flex-1 bg-accent hover:bg-cyan-400 disabled:opacity-50 text-darker font-bold py-2 rounded"
                         >
-                            {busy
-                                ? 'Logging in…'
-                                : 'Login'
+                            {
+                                busy
+                                    ? 'Logging in…'
+                                    : 'Login'
                             }
                         </button>
 
@@ -1657,15 +1615,15 @@ function PortfolioTab({
                 await client
                     .from('projects')
                     .delete()
-                    .eq('id', id);
+                    .eq(
+                        'id',
+                        id
+                    );
 
             if (error) {
-
-                onError(
+                return onError(
                     error.message
                 );
-
-                return;
             }
 
             await onChanged();
@@ -1763,12 +1721,9 @@ function PortfolioTab({
                     );
 
             if (error) {
-
-                onError(
+                return onError(
                     error.message
                 );
-
-                return;
             }
 
             await onChanged();
@@ -1788,14 +1743,15 @@ function PortfolioTab({
 
                     <button
                         onClick={() =>
-                            openProjectModal(null)
+                            openProjectModal(
+                                null
+                            )
                         }
                         className="bg-accent hover:bg-cyan-400 text-darker font-extrabold px-6 py-2 rounded transition-colors flex items-center gap-2"
                     >
                         <span className="text-xl">
                             +
                         </span>
-
                         Add Project
                     </button>
 
@@ -1803,250 +1759,257 @@ function PortfolioTab({
 
             </div>
 
-            {sortedProjects.length === 0 ? (
+            {
+                sortedProjects.length === 0
 
-                <p className="text-gray-500 text-xl font-bold text-center mt-12">
-                    No projects added.
-                </p>
+                    ? (
 
-            ) : (
+                        <p className="text-gray-500 text-xl font-bold text-center mt-12">
+                            No projects added.
+                        </p>
 
-                <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 items-stretch">
+                    )
 
-                    {sortedProjects.map(
-                        (proj, idx) => {
+                    : (
 
-                            const appId =
-                                getSteamAppId(
-                                    proj.steamLink
-                                );
+                        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 items-stretch">
 
-                            const steamBannerUrl =
-                                appId
-                                    ? `https://cdn.cloudflare.steamstatic.com/steam/apps/${appId}/library_hero.jpg`
-                                    : null;
+                            {sortedProjects.map(
+                                (proj, idx) => {
 
-                            /*
-                             * WŁASNE TŁO MA PRIORYTET.
-                             * Jeżeli bg_url istnieje,
-                             * Steamowe tło nie będzie użyte.
-                             */
-                            const bannerUrl =
-                                proj.bg_url
-                                    ? proj.bg_url
-                                    : steamBannerUrl;
+                                    const appId =
+                                        getSteamAppId(
+                                            proj.steamLink
+                                        );
 
-                            const logoUrl =
-                                appId
-                                    ? `https://cdn.cloudflare.steamstatic.com/steam/apps/${appId}/logo.png`
-                                    : null;
+                                    const steamBannerUrl =
+                                        appId
+                                            ? `https://cdn.cloudflare.steamstatic.com/steam/apps/${appId}/library_hero.jpg`
+                                            : null;
 
-                            return (
+                                    const bannerUrl =
+                                        proj.bg_url ||
+                                        steamBannerUrl;
 
-                                <div
-                                    key={proj.id}
-                                    className={`
-                                        glass rounded-xl overflow-hidden
-                                        shadow-2xl flex flex-col h-full
-                                        border relative
-                                        ${
-                                            proj.pinned
-                                                ? 'border-accent shadow-[0_0_20px_rgba(6,182,212,0.15)]'
-                                                : 'border-gray-700'
-                                        }
-                                    `}
-                                >
+                                    const steamLogoUrl =
+                                        appId
+                                            ? `https://cdn.cloudflare.steamstatic.com/steam/apps/${appId}/logo.png`
+                                            : null;
 
-                                    {bannerUrl && (
+                                    const logoUrl =
+                                        proj.logo_url ||
+                                        steamLogoUrl;
+
+                                    return (
 
                                         <div
-                                            className="absolute inset-0 z-0 opacity-20 pointer-events-none bg-cover bg-no-repeat"
-                                            style={{
-                                                backgroundImage:
-                                                    `url("${bannerUrl}")`,
-
-                                                backgroundPosition:
-                                                    `calc(50% + ${proj.bg_offset_x}px) calc(50% + ${proj.bg_offset_y}px)`
-                                            }}
+                                            key={proj.id}
+                                            className={`
+                                                glass rounded-xl overflow-hidden
+                                                shadow-2xl flex flex-col h-full
+                                                border relative
+                                                ${
+                                                    proj.pinned
+                                                        ? 'border-accent shadow-[0_0_20px_rgba(6,182,212,0.15)]'
+                                                        : 'border-gray-700'
+                                                }
+                                            `}
                                         >
 
-                                            <div className="absolute inset-0 bg-gradient-to-t from-darker via-darker/80 to-transparent"></div>
+                                            {bannerUrl && (
 
-                                        </div>
-
-                                    )}
-
-                                    <div className="p-6 relative z-10 flex-grow flex flex-col">
-
-                                        <div className="flex flex-col items-start gap-4 mb-4">
-
-                                            {logoUrl && (
-
-                                                <img
-                                                    src={logoUrl}
-                                                    alt="Logo"
-                                                    className="max-h-16 max-w-[180px] object-contain drop-shadow-md"
+                                                <div
+                                                    className="absolute inset-0 z-0 opacity-20 pointer-events-none bg-cover bg-no-repeat"
                                                     style={{
-                                                        transform:
-                                                            `translate(${proj.logo_offset_x}px, ${proj.logo_offset_y}px)`
+                                                        backgroundImage:
+                                                            `url("${bannerUrl}")`,
+                                                        backgroundPosition:
+                                                            `calc(50% + ${proj.bg_offset_x}px) calc(50% + ${proj.bg_offset_y}px)`
                                                     }}
-                                                    onError={e => {
-                                                        e.currentTarget.style.display =
-                                                            'none';
-                                                    }}
-                                                />
+                                                >
 
-                                            )}
-
-                                            <div className="w-full">
-
-                                                <div className="flex items-start justify-between gap-2">
-
-                                                    <h3 className="text-2xl font-bold text-white mb-1 leading-tight">
-                                                        {proj.title}
-                                                    </h3>
-
-                                                    {proj.pinned && (
-
-                                                        <span className="bg-accent/20 text-accent border border-accent/40 text-[10px] px-2 py-0.5 rounded font-bold uppercase shrink-0 mt-1">
-                                                            Pinned
-                                                        </span>
-
-                                                    )}
+                                                    <div className="absolute inset-0 bg-gradient-to-t from-darker via-darker/80 to-transparent"></div>
 
                                                 </div>
 
-                                                {proj.steamLink && (
+                                            )}
 
-                                                    <a
-                                                        href={proj.steamLink}
-                                                        target="_blank"
-                                                        rel="noreferrer"
-                                                        className="text-accent hover:underline text-xs font-bold flex items-center gap-1 mt-1"
-                                                    >
-                                                        🔗 Steam Page
-                                                    </a>
+                                            <div className="p-6 relative z-10 flex-grow flex flex-col">
+
+                                                <div className="flex flex-col items-start gap-4 mb-4">
+
+                                                    {logoUrl && (
+
+                                                        <img
+                                                            src={logoUrl}
+                                                            alt="Logo"
+                                                            className="max-h-16 max-w-[180px] object-contain drop-shadow-md"
+                                                            style={{
+                                                                transform:
+                                                                    `translate(${proj.logo_offset_x}px, ${proj.logo_offset_y}px)`
+                                                            }}
+                                                            onError={e => {
+                                                                e.currentTarget.style.display =
+                                                                    'none';
+                                                            }}
+                                                        />
+
+                                                    )}
+
+                                                    <div className="w-full">
+
+                                                        <div className="flex items-start justify-between gap-2">
+
+                                                            <h3 className="text-2xl font-bold text-white mb-1 leading-tight">
+                                                                {proj.title}
+                                                            </h3>
+
+                                                            {proj.pinned && (
+
+                                                                <span className="bg-accent/20 text-accent border border-accent/40 text-[10px] px-2 py-0.5 rounded font-bold uppercase shrink-0 mt-1">
+                                                                    Pinned
+                                                                </span>
+
+                                                            )}
+
+                                                        </div>
+
+                                                        {proj.steamLink && (
+
+                                                            <a
+                                                                href={proj.steamLink}
+                                                                target="_blank"
+                                                                rel="noreferrer"
+                                                                className="text-accent hover:underline text-xs font-bold flex items-center gap-1 mt-1"
+                                                            >
+                                                                🔗 Steam Page
+                                                            </a>
+
+                                                        )}
+
+                                                    </div>
+
+                                                </div>
+
+                                                <div className="text-gray-300 text-sm font-medium leading-relaxed mb-6 whitespace-pre-wrap flex-grow">
+                                                    {proj.details}
+                                                </div>
+
+                                                {isAdmin && (
+
+                                                    <div className="flex flex-wrap gap-2 items-center mt-auto pt-4 border-t border-gray-700/50">
+
+                                                        <button
+                                                            onClick={() =>
+                                                                togglePinProject(
+                                                                    proj
+                                                                )
+                                                            }
+                                                            className={`
+                                                                px-2 py-1 rounded
+                                                                text-[10px] font-bold border
+                                                                ${
+                                                                    proj.pinned
+                                                                        ? 'bg-accent text-darker border-accent'
+                                                                        : 'bg-gray-800 text-gray-300 border-gray-600'
+                                                                }
+                                                            `}
+                                                        >
+                                                            {
+                                                                proj.pinned
+                                                                    ? 'Unpin'
+                                                                    : 'Pin'
+                                                            }
+                                                        </button>
+
+                                                        <button
+                                                            onClick={() =>
+                                                                moveProject(
+                                                                    idx,
+                                                                    -1
+                                                                )
+                                                            }
+                                                            disabled={
+                                                                idx === 0
+                                                            }
+                                                            className="bg-gray-800 hover:bg-gray-700 disabled:opacity-30 text-white px-2 py-1 rounded text-xs font-bold border border-gray-600"
+                                                            title="Move Left"
+                                                        >
+                                                            ←
+                                                        </button>
+
+                                                        <button
+                                                            onClick={() =>
+                                                                moveProject(
+                                                                    idx,
+                                                                    1
+                                                                )
+                                                            }
+                                                            disabled={
+                                                                idx ===
+                                                                sortedProjects.length - 1
+                                                            }
+                                                            className="bg-gray-800 hover:bg-gray-700 disabled:opacity-30 text-white px-2 py-1 rounded text-xs font-bold border border-gray-600"
+                                                            title="Move Right"
+                                                        >
+                                                            →
+                                                        </button>
+
+                                                        <button
+                                                            onClick={() =>
+                                                                openProjectModal(
+                                                                    proj
+                                                                )
+                                                            }
+                                                            className="bg-blue-900/50 text-blue-400 border border-blue-800 px-2 py-1 rounded text-[10px] font-bold ml-auto"
+                                                        >
+                                                            Edit
+                                                        </button>
+
+                                                        <button
+                                                            onClick={() =>
+                                                                deleteProject(
+                                                                    proj.id
+                                                                )
+                                                            }
+                                                            className="bg-red-900/50 text-red-400 border border-red-800 px-2 py-1 rounded text-[10px] font-bold"
+                                                        >
+                                                            Delete
+                                                        </button>
+
+                                                    </div>
 
                                                 )}
 
                                             </div>
 
+                                            {proj.pinnedReviews &&
+                                                proj.pinnedReviews.length > 0 && (
+
+                                                    <div className="mt-auto">
+
+                                                        <PinnedReviewsSection
+                                                            pinnedReviewIds={
+                                                                proj.pinnedReviews
+                                                            }
+                                                            reviews={
+                                                                reviews
+                                                            }
+                                                        />
+
+                                                    </div>
+
+                                                )}
+
                                         </div>
+                                    );
+                                }
+                            )}
 
-                                        <div className="text-gray-300 text-sm font-medium leading-relaxed mb-6 whitespace-pre-wrap flex-grow">
-                                            {proj.details}
-                                        </div>
+                        </div>
 
-                                        {isAdmin && (
-
-                                            <div className="flex flex-wrap gap-2 items-center mt-auto pt-4 border-t border-gray-700/50">
-
-                                                <button
-                                                    onClick={() =>
-                                                        togglePinProject(
-                                                            proj
-                                                        )
-                                                    }
-                                                    className={`
-                                                        px-2 py-1 rounded
-                                                        text-[10px]
-                                                        font-bold border
-                                                        ${
-                                                            proj.pinned
-                                                                ? 'bg-accent text-darker border-accent'
-                                                                : 'bg-gray-800 text-gray-300 border-gray-600'
-                                                        }
-                                                    `}
-                                                >
-                                                    {proj.pinned
-                                                        ? 'Unpin'
-                                                        : 'Pin'
-                                                    }
-                                                </button>
-
-                                                <button
-                                                    onClick={() =>
-                                                        moveProject(
-                                                            idx,
-                                                            -1
-                                                        )
-                                                    }
-                                                    disabled={idx === 0}
-                                                    className="bg-gray-800 hover:bg-gray-700 disabled:opacity-30 text-white px-2 py-1 rounded text-xs font-bold border border-gray-600"
-                                                    title="Move Left"
-                                                >
-                                                    ←
-                                                </button>
-
-                                                <button
-                                                    onClick={() =>
-                                                        moveProject(
-                                                            idx,
-                                                            1
-                                                        )
-                                                    }
-                                                    disabled={
-                                                        idx ===
-                                                        sortedProjects.length - 1
-                                                    }
-                                                    className="bg-gray-800 hover:bg-gray-700 disabled:opacity-30 text-white px-2 py-1 rounded text-xs font-bold border border-gray-600"
-                                                    title="Move Right"
-                                                >
-                                                    →
-                                                </button>
-
-                                                <button
-                                                    onClick={() =>
-                                                        openProjectModal(
-                                                            proj
-                                                        )
-                                                    }
-                                                    className="bg-blue-900/50 text-blue-400 border border-blue-800 px-2 py-1 rounded text-[10px] font-bold ml-auto"
-                                                >
-                                                    Edit
-                                                </button>
-
-                                                <button
-                                                    onClick={() =>
-                                                        deleteProject(
-                                                            proj.id
-                                                        )
-                                                    }
-                                                    className="bg-red-900/50 text-red-400 border border-red-800 px-2 py-1 rounded text-[10px] font-bold"
-                                                >
-                                                    Delete
-                                                </button>
-
-                                            </div>
-
-                                        )}
-
-                                    </div>
-
-                                    {proj.pinnedReviews &&
-                                        proj.pinnedReviews.length > 0 && (
-
-                                            <div className="mt-auto">
-
-                                                <PinnedReviewsSection
-                                                    pinnedReviewIds={
-                                                        proj.pinnedReviews
-                                                    }
-                                                    reviews={reviews}
-                                                />
-
-                                            </div>
-
-                                        )}
-
-                                </div>
-                            );
-                        }
-                    )}
-
-                </div>
-
-            )}
+                    )
+            }
 
         </div>
     );
@@ -2065,10 +2028,11 @@ function PinnedReviewsSection({
 
     const pinnedReviewsList =
         pinnedReviewIds
-            .map(id =>
-                reviews.find(
-                    r => r.id === id
-                )
+            .map(
+                id =>
+                    reviews.find(
+                        r => r.id === id
+                    )
             )
             .filter(Boolean);
 
@@ -2151,19 +2115,23 @@ function PinnedReviewsSection({
                             <div className="text-right">
 
                                 <div className="text-[10px] font-mono font-bold text-yellow-400">
-                                    {calculateAverageRating(
-                                        rev.ratings
-                                    ).toFixed(1)}
+                                    {
+                                        calculateAverageRating(
+                                            rev.ratings
+                                        ).toFixed(1)
+                                    }
                                     {' '}
                                     / 5
                                 </div>
 
                                 <div className="scale-[0.6] origin-right -mt-1">
-                                    {renderStars(
-                                        calculateAverageRating(
-                                            rev.ratings
+                                    {
+                                        renderStars(
+                                            calculateAverageRating(
+                                                rev.ratings
+                                            )
                                         )
-                                    )}
+                                    }
                                 </div>
 
                             </div>
@@ -2437,14 +2405,18 @@ function ReviewCard({
                                     <div className="flex items-center gap-2">
 
                                         <span className="text-yellow-400 text-xs font-mono font-bold">
-                                            {Number(
-                                                rating.value
-                                            ).toFixed(1)}
+                                            {
+                                                Number(
+                                                    rating.value
+                                                ).toFixed(1)
+                                            }
                                         </span>
 
-                                        {renderStars(
-                                            rating.value
-                                        )}
+                                        {
+                                            renderStars(
+                                                rating.value
+                                            )
+                                        }
 
                                     </div>
 
@@ -2477,15 +2449,18 @@ function ReviewCard({
                             }
                         `}
                     >
-                        {review.published
-                            ? 'Published'
-                            : 'Hidden'
+                        {
+                            review.published
+                                ? 'Published'
+                                : 'Hidden'
                         }
                     </button>
 
                     <button
                         onClick={() =>
-                            onEdit(review)
+                            onEdit(
+                                review
+                            )
                         }
                         className="flex-1 bg-blue-900/50 text-blue-400 border border-blue-800 rounded text-xs font-bold py-1"
                     >
@@ -2556,9 +2531,7 @@ function InviteCodeModal({
         const client =
             getSupabase();
 
-        if (!client) {
-            return;
-        }
+        if (!client) return;
 
         setBusy(true);
         setError('');
@@ -2584,12 +2557,9 @@ function InviteCodeModal({
             !preview ||
             !preview.length
         ) {
-
-            setError(
+            return setError(
                 'Invalid or used code.'
             );
-
-            return;
         }
 
         setData(
@@ -2598,19 +2568,25 @@ function InviteCodeModal({
     };
 
     const updateRating =
-        (index, value) => {
+        (
+            index,
+            value
+        ) => {
 
-            setRatings(prev => {
+            setRatings(
+                prev => {
 
-                const a = [...prev];
+                    const a =
+                        [...prev];
 
-                a[index] = {
-                    ...a[index],
-                    value
-                };
+                    a[index] = {
+                        ...a[index],
+                        value
+                    };
 
-                return a;
-            });
+                    return a;
+                }
+            );
         };
 
     const submit = async e => {
@@ -2629,32 +2605,31 @@ function InviteCodeModal({
         }
 
         setBusy(true);
-
         setError('');
 
         const formattedRatings =
             (ratings || [])
-                .map(r => ({
+                .map(
+                    r => ({
+                        category:
+                            String(
+                                r.category || ''
+                            ).trim(),
 
-                    category:
-                        String(
-                            r.category || ''
-                        ).trim(),
-
-                    value:
-                        Math.max(
-                            0,
-                            Math.min(
-                                5,
-                                Math.round(
-                                    Number(
-                                        r.value
-                                    ) * 2
-                                ) / 2
+                        value:
+                            Math.max(
+                                0,
+                                Math.min(
+                                    5,
+                                    Math.round(
+                                        Number(
+                                            r.value
+                                        ) * 2
+                                    ) / 2
+                                )
                             )
-                        )
-
-                }))
+                    })
+                )
                 .filter(
                     r =>
                         r.category &&
@@ -2685,12 +2660,9 @@ function InviteCodeModal({
         setBusy(false);
 
         if (rpcError) {
-
-            setError(
+            return setError(
                 rpcError.message
             );
-
-            return;
         }
 
         await onSubmitted();
@@ -2752,9 +2724,10 @@ function InviteCodeModal({
                             disabled={busy}
                             className="w-full bg-accent hover:bg-cyan-400 disabled:opacity-50 text-darker font-bold py-2 rounded"
                         >
-                            {busy
-                                ? 'Verifying…'
-                                : 'Verify'
+                            {
+                                busy
+                                    ? 'Verifying…'
+                                    : 'Verify'
                             }
                         </button>
 
@@ -2793,7 +2766,9 @@ function InviteCodeModal({
                                 {data.game_title && (
 
                                     <div className="text-cyan-400 font-bold text-[10px]">
-                                        Game: {data.game_title}
+                                        Game:
+                                        {' '}
+                                        {data.game_title}
                                     </div>
 
                                 )}
@@ -2801,7 +2776,9 @@ function InviteCodeModal({
                                 {data.discord_username && (
 
                                     <div className="text-gray-400 font-mono text-[10px]">
-                                        Discord: {data.discord_username}
+                                        Discord:
+                                        {' '}
+                                        {data.discord_username}
                                     </div>
 
                                 )}
@@ -2842,14 +2819,16 @@ function InviteCodeModal({
                                 <button
                                     type="button"
                                     onClick={() =>
-                                        setRatings(prev => [
-                                            ...prev,
-                                            {
-                                                category:
-                                                    'New category',
-                                                value: 5
-                                            }
-                                        ])
+                                        setRatings(
+                                            prev => [
+                                                ...prev,
+                                                {
+                                                    category:
+                                                        'New category',
+                                                    value: 5
+                                                }
+                                            ]
+                                        )
                                     }
                                     className="text-xs bg-gray-800 hover:bg-gray-700 border border-gray-700 rounded px-3 py-2 font-bold"
                                 >
@@ -2858,97 +2837,106 @@ function InviteCodeModal({
 
                             </div>
 
-                            {ratings.length === 0 ? (
-
-                                <p className="text-xs text-gray-500 italic font-bold">
-                                    No ratings.
-                                </p>
-
-                            ) : (
-
-                                ratings.map(
-                                    (rating, idx) => (
-
-                                        <div
-                                            key={idx}
-                                            className="flex items-center justify-between gap-3 mb-2"
-                                        >
-
-                                            <input
-                                                value={
-                                                    rating.category
-                                                }
-                                                onChange={e => {
-
-                                                    const a =
-                                                        [...ratings];
-
-                                                    a[idx] = {
-                                                        ...a[idx],
-                                                        category:
-                                                            e.target.value
-                                                    };
-
-                                                    setRatings(a);
-                                                }}
-                                                className="bg-gray-950 border border-gray-700 rounded p-2 text-white text-xs w-1/3 font-bold"
-                                            />
-
-                                            <input
-                                                type="range"
-                                                min="0"
-                                                max="5"
-                                                step="0.5"
-                                                value={
-                                                    rating.value
-                                                }
-                                                onChange={e =>
-                                                    updateRating(
-                                                        idx,
-                                                        parseFloat(
-                                                            e.target.value
-                                                        )
-                                                    )
-                                                }
-                                                className="w-1/3 accent-accent"
-                                            />
-
-                                            <div className="flex items-center gap-2 w-28 justify-end">
-
-                                                <span className="text-yellow-400 font-mono text-xs font-bold">
-                                                    {Number(
-                                                        rating.value
-                                                    ).toFixed(1)}
-                                                </span>
-
-                                                {renderStars(
-                                                    rating.value
-                                                )}
-
-                                            </div>
-
-                                            <button
-                                                type="button"
-                                                onClick={() =>
-                                                    setRatings(
-                                                        prev =>
-                                                            prev.filter(
-                                                                (_, i) =>
-                                                                    i !== idx
-                                                            )
-                                                    )
-                                                }
-                                                className="text-red-500 hover:text-red-400 font-bold text-xs px-2 py-1 bg-red-950/40 border border-red-900/50 rounded"
-                                            >
-                                                ✕
-                                            </button>
-
-                                        </div>
-
+                            {
+                                ratings.length === 0
+                                    ? (
+                                        <p className="text-xs text-gray-500 italic font-bold">
+                                            No ratings.
+                                        </p>
                                     )
-                                )
+                                    : (
+                                        ratings.map(
+                                            (
+                                                rating,
+                                                idx
+                                            ) => (
 
-                            )}
+                                                <div
+                                                    key={idx}
+                                                    className="flex items-center justify-between gap-3 mb-2"
+                                                >
+
+                                                    <input
+                                                        value={
+                                                            rating.category
+                                                        }
+                                                        onChange={e => {
+
+                                                            const a =
+                                                                [...ratings];
+
+                                                            a[idx] = {
+                                                                ...a[idx],
+                                                                category:
+                                                                    e.target.value
+                                                            };
+
+                                                            setRatings(
+                                                                a
+                                                            );
+                                                        }}
+                                                        className="bg-gray-950 border border-gray-700 rounded p-2 text-white text-xs w-1/3 font-bold"
+                                                    />
+
+                                                    <input
+                                                        type="range"
+                                                        min="0"
+                                                        max="5"
+                                                        step="0.5"
+                                                        value={
+                                                            rating.value
+                                                        }
+                                                        onChange={e =>
+                                                            updateRating(
+                                                                idx,
+                                                                parseFloat(
+                                                                    e.target.value
+                                                                )
+                                                            )
+                                                        }
+                                                        className="w-1/3 accent-accent"
+                                                    />
+
+                                                    <div className="flex items-center gap-2 w-28 justify-end">
+
+                                                        <span className="text-yellow-400 font-mono text-xs font-bold">
+                                                            {
+                                                                Number(
+                                                                    rating.value
+                                                                ).toFixed(1)
+                                                            }
+                                                        </span>
+
+                                                        {
+                                                            renderStars(
+                                                                rating.value
+                                                            )
+                                                        }
+
+                                                    </div>
+
+                                                    <button
+                                                        type="button"
+                                                        onClick={() =>
+                                                            setRatings(
+                                                                prev =>
+                                                                    prev.filter(
+                                                                        (_, i) =>
+                                                                            i !== idx
+                                                                    )
+                                                            )
+                                                        }
+                                                        className="text-red-500 hover:text-red-400 font-bold text-xs px-2 py-1 bg-red-950/40 border border-red-900/50 rounded"
+                                                    >
+                                                        ✕
+                                                    </button>
+
+                                                </div>
+
+                                            )
+                                        )
+                                    )
+                            }
 
                         </div>
 
@@ -2974,9 +2962,10 @@ function InviteCodeModal({
                                 disabled={busy}
                                 className="flex-1 bg-accent hover:bg-cyan-400 text-darker font-bold py-2 rounded"
                             >
-                                {busy
-                                    ? 'Sending…'
-                                    : 'Submit feedback'
+                                {
+                                    busy
+                                        ? 'Sending…'
+                                        : 'Submit feedback'
                                 }
                             </button>
 
@@ -3030,15 +3019,14 @@ function AdminTab({
                     );
 
             if (error) {
-
-                onError(
+                return onError(
                     error.message
                 );
-
-                return;
             }
 
-            await reloadReviews(true);
+            await reloadReviews(
+                true
+            );
 
             onToast(
                 'Feedback deleted.'
@@ -3065,15 +3053,14 @@ function AdminTab({
                     );
 
             if (error) {
-
-                onError(
+                return onError(
                     error.message
                 );
-
-                return;
             }
 
-            await reloadReviews(true);
+            await reloadReviews(
+                true
+            );
 
             onToast(
                 published
@@ -3109,12 +3096,9 @@ function AdminTab({
                     );
 
             if (error) {
-
-                onError(
+                return onError(
                     error.message
                 );
-
-                return;
             }
 
             await reloadCodes();
@@ -3142,7 +3126,9 @@ function AdminTab({
 
                     <button
                         onClick={() =>
-                            openReviewModal(null)
+                            openReviewModal(
+                                null
+                            )
                         }
                         className="bg-accent hover:bg-cyan-400 text-darker font-extrabold px-5 py-2 rounded"
                     >
@@ -3331,10 +3317,7 @@ function GenerateCodeModal({
     const uploadCodeAvatar =
         async file => {
 
-            if (
-                !file ||
-                !client
-            ) {
+            if (!file || !client) {
                 return;
             }
 
@@ -3342,7 +3325,6 @@ function GenerateCodeModal({
                 file.size >
                 6 * 1024 * 1024
             ) {
-
                 return onError(
                     'Avatar must be under 6 MB.'
                 );
@@ -3448,7 +3430,9 @@ function GenerateCodeModal({
                 return;
             }
 
-            setCodeBusy(true);
+            setCodeBusy(
+                true
+            );
 
             for (
                 let attempt = 0;
@@ -3468,25 +3452,18 @@ function GenerateCodeModal({
                     await client
                         .from('invite_codes')
                         .insert({
-
                             code,
-
                             nickname,
-
                             role,
-
                             game_title:
                                 gameTitle ||
                                 null,
-
                             discord_username:
                                 discordUsername ||
                                 null,
-
                             avatar_url:
                                 codeAvatar ||
                                 null,
-
                             used: false
                         });
 
@@ -3657,9 +3634,10 @@ function GenerateCodeModal({
                             }
                             className="flex-1 bg-purple-600 hover:bg-purple-500 disabled:opacity-50 text-white font-bold py-2 rounded"
                         >
-                            {codeBusy
-                                ? 'Generating…'
-                                : 'Generate'
+                            {
+                                codeBusy
+                                    ? 'Generating…'
+                                    : 'Generate'
                             }
                         </button>
 
@@ -3680,14 +3658,8 @@ function ReviewFormModal({
     onError
 }) {
 
-    /*
-     * NAPRAWIONE:
-     * wcześniej tutaj przypadkowo było "project",
-     * które nie istnieje w tym komponencie.
-     */
     const [formData, setFormData] =
         useState(() => ({
-
             pfp:
                 (
                     review &&
@@ -3788,7 +3760,6 @@ function ReviewFormModal({
                 file.size >
                 6 * 1024 * 1024
             ) {
-
                 return onError(
                     'Avatar must be under 6 MB.'
                 );
@@ -3869,7 +3840,6 @@ function ReviewFormModal({
                 !formData.nickname.trim() ||
                 !formData.text.trim()
             ) {
-
                 return onError(
                     'Nickname and text are required.'
                 );
@@ -3908,28 +3878,28 @@ function ReviewFormModal({
                         formData.ratings ||
                         []
                     )
-                        .map(r => ({
+                        .map(
+                            r => ({
+                                category:
+                                    String(
+                                        r.category ||
+                                        ''
+                                    ).trim(),
 
-                            category:
-                                String(
-                                    r.category ||
-                                    ''
-                                ).trim(),
-
-                            value:
-                                Math.max(
-                                    0,
-                                    Math.min(
-                                        5,
-                                        Math.round(
-                                            Number(
-                                                r.value
-                                            ) * 2
-                                        ) / 2
+                                value:
+                                    Math.max(
+                                        0,
+                                        Math.min(
+                                            5,
+                                            Math.round(
+                                                Number(
+                                                    r.value
+                                                ) * 2
+                                            ) / 2
+                                        )
                                     )
-                                )
-
-                        }))
+                            })
+                        )
                         .filter(
                             r =>
                                 r.category &&
@@ -3947,7 +3917,9 @@ function ReviewFormModal({
 
                     ? await client
                         .from('reviews')
-                        .update(payload)
+                        .update(
+                            payload
+                        )
                         .eq(
                             'id',
                             review.id
@@ -3964,7 +3936,6 @@ function ReviewFormModal({
             );
 
             if (result.error) {
-
                 return onError(
                     result.error.message
                 );
@@ -4007,9 +3978,10 @@ function ReviewFormModal({
                 <div className="flex justify-between items-center mb-6">
 
                     <h2 className="text-2xl font-bold text-accent">
-                        {review
-                            ? 'Edit feedback'
-                            : 'Add feedback'
+                        {
+                            review
+                                ? 'Edit feedback'
+                                : 'Add feedback'
                         }
                     </h2>
 
@@ -4055,7 +4027,9 @@ function ReviewFormModal({
                             {formData.pfp && (
 
                                 <img
-                                    src={formData.pfp}
+                                    src={
+                                        formData.pfp
+                                    }
                                     className="w-10 h-10 rounded-full mt-2 border border-gray-600 object-cover"
                                     alt=""
                                 />
@@ -4163,7 +4137,6 @@ function ReviewFormModal({
                         <div className="flex justify-between items-center mb-3">
 
                             <label className="text-sm font-bold text-accent">
-
                                 Ratings
                                 {' '}
                                 (Average:
@@ -4171,7 +4144,6 @@ function ReviewFormModal({
                                 {avg.toFixed(1)}
                                 {' '}
                                 / 5)
-
                             </label>
 
                             <button
@@ -4198,103 +4170,112 @@ function ReviewFormModal({
 
                         </div>
 
-                        {formData.ratings.length === 0 ? (
-
-                            <p className="text-xs text-gray-500 italic font-bold">
-                                No ratings.
-                            </p>
-
-                        ) : (
-
-                            formData.ratings.map(
-                                (rating, idx) => (
-
-                                    <div
-                                        key={idx}
-                                        className="flex items-center justify-between gap-3 mb-2"
-                                    >
-
-                                        <input
-                                            value={
-                                                rating.category
-                                            }
-                                            onChange={e => {
-
-                                                const a =
-                                                    [...formData.ratings];
-
-                                                a[idx] = {
-                                                    ...a[idx],
-                                                    category:
-                                                        e.target.value
-                                                };
-
-                                                setFormData({
-                                                    ...formData,
-                                                    ratings: a
-                                                });
-                                            }}
-                                            className="bg-gray-950 border border-gray-700 rounded p-2 text-white text-xs w-1/3 font-bold"
-                                        />
-
-                                        <input
-                                            type="range"
-                                            min="0"
-                                            max="5"
-                                            step="0.5"
-                                            value={
-                                                rating.value
-                                            }
-                                            onChange={e =>
-                                                updateRating(
-                                                    idx,
-                                                    parseFloat(
-                                                        e.target.value
-                                                    )
-                                                )
-                                            }
-                                            className="w-1/3 accent-accent"
-                                        />
-
-                                        <div className="flex items-center gap-2 w-28 justify-end">
-
-                                            <span className="text-yellow-400 font-mono text-xs font-bold">
-                                                {Number(
-                                                    rating.value
-                                                ).toFixed(1)}
-                                            </span>
-
-                                            {renderStars(
-                                                rating.value
-                                            )}
-
-                                        </div>
-
-                                        <button
-                                            type="button"
-                                            onClick={() =>
-                                                setFormData(
-                                                    f => ({
-                                                        ...f,
-                                                        ratings:
-                                                            f.ratings.filter(
-                                                                (_, i) =>
-                                                                    i !== idx
-                                                            )
-                                                    })
-                                                )
-                                            }
-                                            className="text-red-500 hover:text-red-400 font-bold text-xs px-2 py-1 bg-red-950/40 border border-red-900/50 rounded"
-                                        >
-                                            ✕
-                                        </button>
-
-                                    </div>
-
+                        {
+                            formData.ratings.length === 0
+                                ? (
+                                    <p className="text-xs text-gray-500 italic font-bold">
+                                        No ratings.
+                                    </p>
                                 )
-                            )
+                                : (
+                                    formData.ratings.map(
+                                        (
+                                            rating,
+                                            idx
+                                        ) => (
 
-                        )}
+                                            <div
+                                                key={idx}
+                                                className="flex items-center justify-between gap-3 mb-2"
+                                            >
+
+                                                <input
+                                                    value={
+                                                        rating.category
+                                                    }
+                                                    onChange={e => {
+
+                                                        const a =
+                                                            [
+                                                                ...formData.ratings
+                                                            ];
+
+                                                        a[idx] = {
+                                                            ...a[idx],
+                                                            category:
+                                                                e.target.value
+                                                        };
+
+                                                        setFormData({
+                                                            ...formData,
+                                                            ratings: a
+                                                        });
+                                                    }}
+                                                    className="bg-gray-950 border border-gray-700 rounded p-2 text-white text-xs w-1/3 font-bold"
+                                                />
+
+                                                <input
+                                                    type="range"
+                                                    min="0"
+                                                    max="5"
+                                                    step="0.5"
+                                                    value={
+                                                        rating.value
+                                                    }
+                                                    onChange={e =>
+                                                        updateRating(
+                                                            idx,
+                                                            parseFloat(
+                                                                e.target.value
+                                                            )
+                                                        )
+                                                    }
+                                                    className="w-1/3 accent-accent"
+                                                />
+
+                                                <div className="flex items-center gap-2 w-28 justify-end">
+
+                                                    <span className="text-yellow-400 font-mono text-xs font-bold">
+                                                        {
+                                                            Number(
+                                                                rating.value
+                                                            ).toFixed(1)
+                                                        }
+                                                    </span>
+
+                                                    {
+                                                        renderStars(
+                                                            rating.value
+                                                        )
+                                                    }
+
+                                                </div>
+
+                                                <button
+                                                    type="button"
+                                                    onClick={() =>
+                                                        setFormData(
+                                                            f => ({
+                                                                ...f,
+                                                                ratings:
+                                                                    f.ratings.filter(
+                                                                        (_, i) =>
+                                                                            i !== idx
+                                                                    )
+                                                            })
+                                                        )
+                                                    }
+                                                    className="text-red-500 hover:text-red-400 font-bold text-xs px-2 py-1 bg-red-950/40 border border-red-900/50 rounded"
+                                                >
+                                                    ✕
+                                                </button>
+
+                                            </div>
+
+                                        )
+                                    )
+                                )
+                        }
 
                     </div>
 
@@ -4336,9 +4317,10 @@ function ReviewFormModal({
                             }
                             className="flex-1 bg-accent hover:bg-cyan-400 disabled:opacity-50 text-darker font-bold py-2 rounded"
                         >
-                            {saving
-                                ? 'Saving…'
-                                : 'Save'
+                            {
+                                saving
+                                    ? 'Saving…'
+                                    : 'Save'
                             }
                         </button>
 
@@ -4369,38 +4351,49 @@ function ProjectFormModal({
                     ...project,
 
                     pinnedReviews:
-                        project.pinnedReviews || [],
+                        project.pinnedReviews ||
+                        [],
 
                     pinned:
                         !!project.pinned,
 
                     sort_order:
-                        project.sort_order || 0,
+                        project.sort_order ||
+                        0,
 
                     bg_url:
-                        project.bg_url || '',
+                        project.bg_url ||
+                        '',
+
+                    logo_url:
+                        project.logo_url ||
+                        '',
 
                     bg_offset_x:
-                        project.bg_offset_x || 0,
+                        project.bg_offset_x ||
+                        0,
 
                     bg_offset_y:
-                        project.bg_offset_y || 0,
+                        project.bg_offset_y ||
+                        0,
 
                     logo_offset_x:
-                        project.logo_offset_x || 0,
+                        project.logo_offset_x ||
+                        0,
 
                     logo_offset_y:
-                        project.logo_offset_y || 0
+                        project.logo_offset_y ||
+                        0
                 };
             }
 
             return {
 
                 title: '',
-
                 steamLink: '',
 
                 bg_url: '',
+                logo_url: '',
 
                 details: '',
 
@@ -4411,11 +4404,9 @@ function ProjectFormModal({
                 sort_order: 0,
 
                 bg_offset_x: 0,
-
                 bg_offset_y: 0,
 
                 logo_offset_x: 0,
-
                 logo_offset_y: 0
             };
         });
@@ -4423,41 +4414,12 @@ function ProjectFormModal({
     const [uploadingBg, setUploadingBg] =
         useState(false);
 
+    const [uploadingLogo, setUploadingLogo] =
+        useState(false);
+
     const client =
         getSupabase();
 
-    const togglePin =
-        revId => {
-
-            setFormData(
-                f => ({
-
-                    ...f,
-
-                    pinnedReviews:
-                        f.pinnedReviews.includes(
-                            revId
-                        )
-                            ? f.pinnedReviews.filter(
-                                id =>
-                                    id !== revId
-                            )
-                            : [
-                                ...f.pinnedReviews,
-                                revId
-                            ]
-                })
-            );
-        };
-
-    /*
-     * Upload własnego tła.
-     *
-     * Korzystamy tutaj z tego samego bucketu:
-     * review-avatars
-     *
-     * więc nie musisz tworzyć kolejnego bucketu.
-     */
     const uploadBackground =
         async file => {
 
@@ -4547,13 +4509,115 @@ function ProjectFormModal({
             );
         };
 
-    const removeBackground =
-        () => {
+    const uploadLogo =
+        async file => {
+
+            if (
+                !file ||
+                !client
+            ) {
+                return;
+            }
+
+            if (
+                file.size >
+                6 * 1024 * 1024
+            ) {
+
+                onError(
+                    'Logo must be under 6 MB.'
+                );
+
+                return;
+            }
+
+            setUploadingLogo(
+                true
+            );
+
+            const safeName =
+                file.name
+                    .toLowerCase()
+                    .replace(
+                        /[^a-z0-9._-]/g,
+                        '-'
+                    );
+
+            const path =
+                `project-logo-${crypto.randomUUID()}-${safeName}`;
+
+            const {
+                error
+            } =
+                await client
+                    .storage
+                    .from('review-avatars')
+                    .upload(
+                        path,
+                        file,
+                        {
+                            upsert: false,
+                            contentType:
+                                file.type
+                        }
+                    );
+
+            if (error) {
+
+                setUploadingLogo(
+                    false
+                );
+
+                onError(
+                    error.message
+                );
+
+                return;
+            }
+
+            const {
+                data
+            } =
+                client
+                    .storage
+                    .from('review-avatars')
+                    .getPublicUrl(
+                        path
+                    );
 
             setFormData(
                 f => ({
                     ...f,
-                    bg_url: ''
+                    logo_url:
+                        data.publicUrl
+                })
+            );
+
+            setUploadingLogo(
+                false
+            );
+        };
+
+    const togglePin =
+        revId => {
+
+            setFormData(
+                f => ({
+
+                    ...f,
+
+                    pinnedReviews:
+                        f.pinnedReviews.includes(
+                            revId
+                        )
+                            ? f.pinnedReviews.filter(
+                                id =>
+                                    id !== revId
+                            )
+                            : [
+                                ...f.pinnedReviews,
+                                revId
+                            ]
                 })
             );
         };
@@ -4622,19 +4686,23 @@ function ProjectFormModal({
             formData.steamLink
         );
 
-    const steamPreview =
+    const steamBannerUrl =
         appId
             ? `https://cdn.cloudflare.steamstatic.com/steam/apps/${appId}/library_hero.jpg`
             : null;
 
-    const previewBackground =
-        formData.bg_url ||
-        steamPreview;
-
-    const previewLogo =
+    const steamLogoUrl =
         appId
             ? `https://cdn.cloudflare.steamstatic.com/steam/apps/${appId}/logo.png`
             : null;
+
+    const previewBackground =
+        formData.bg_url ||
+        steamBannerUrl;
+
+    const previewLogo =
+        formData.logo_url ||
+        steamLogoUrl;
 
     return (
 
@@ -4647,14 +4715,15 @@ function ProjectFormModal({
                     <div>
 
                         <h2 className="text-2xl font-bold text-accent">
-                            {project
-                                ? 'Edit project'
-                                : 'New project'
+                            {
+                                project
+                                    ? 'Edit project'
+                                    : 'New project'
                             }
                         </h2>
 
                         <p className="text-xs text-gray-500 mt-1">
-                            Manage the project card, background and image positions.
+                            Manage project images and positions.
                         </p>
 
                     </div>
@@ -4669,7 +4738,9 @@ function ProjectFormModal({
                 </div>
 
                 <form
-                    onSubmit={handleSubmit}
+                    onSubmit={
+                        handleSubmit
+                    }
                     className="space-y-5"
                 >
 
@@ -4713,88 +4784,168 @@ function ProjectFormModal({
 
                     </Field>
 
-                    <div className="border border-gray-700 p-4 rounded bg-gray-900">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
-                        <div className="flex justify-between items-center mb-3">
+                        <div className="border border-gray-700 p-4 rounded bg-gray-900">
 
-                            <div>
+                            <div className="flex justify-between items-center mb-3">
 
-                                <label className="text-sm font-bold text-accent">
-                                    Custom Background
-                                </label>
+                                <div>
 
-                                <p className="text-xs text-gray-500 mt-1">
-                                    This replaces the Steam banner.
-                                </p>
+                                    <label className="text-sm font-bold text-accent">
+                                        Custom Background
+                                    </label>
+
+                                    <p className="text-xs text-gray-500 mt-1">
+                                        Replaces the Steam banner.
+                                    </p>
+
+                                </div>
+
+                                {formData.bg_url && (
+
+                                    <button
+                                        type="button"
+                                        onClick={() =>
+                                            setFormData(
+                                                f => ({
+                                                    ...f,
+                                                    bg_url: ''
+                                                })
+                                            )
+                                        }
+                                        className="text-xs bg-red-900/40 hover:bg-red-900/70 text-red-400 border border-red-800 px-2 py-1 rounded font-bold"
+                                    >
+                                        Remove
+                                    </button>
+
+                                )}
 
                             </div>
 
-                            {formData.bg_url && (
+                            <input
+                                type="file"
+                                accept="image/*"
+                                disabled={
+                                    uploadingBg
+                                }
+                                onChange={e =>
+                                    uploadBackground(
+                                        e.target.files &&
+                                        e.target.files[0]
+                                    )
+                                }
+                                className="w-full bg-gray-950 border border-gray-700 rounded p-1 text-white text-sm font-bold"
+                            />
 
-                                <button
-                                    type="button"
-                                    onClick={
-                                        removeBackground
-                                    }
-                                    className="text-xs bg-red-900/40 hover:bg-red-900/70 text-red-400 border border-red-800 px-3 py-1.5 rounded font-bold"
-                                >
-                                    Remove
-                                </button>
+                            {uploadingBg && (
+
+                                <p className="text-xs text-gray-500 mt-2 font-bold">
+                                    Uploading…
+                                </p>
 
                             )}
 
-                        </div>
-
-                        <input
-                            type="file"
-                            accept="image/*"
-                            disabled={
-                                uploadingBg
-                            }
-                            onChange={e =>
-                                uploadBackground(
-                                    e.target.files &&
-                                    e.target.files[0]
-                                )
-                            }
-                            className="w-full bg-gray-950 border border-gray-700 rounded p-1 text-white text-sm font-bold"
-                        />
-
-                        {uploadingBg && (
-
-                            <p className="text-xs text-gray-500 mt-2 font-bold">
-                                Uploading background…
-                            </p>
-
-                        )}
-
-                        {formData.bg_url && (
-
-                            <div className="mt-3">
-
-                                <div className="flex items-center justify-between mb-2">
-
-                                    <span className="text-xs text-green-400 font-bold">
-                                        ✓ Custom background uploaded
-                                    </span>
-
-                                </div>
+                            {formData.bg_url && (
 
                                 <img
                                     src={
                                         formData.bg_url
                                     }
-                                    alt="Background preview"
-                                    className="w-full h-32 object-cover rounded border border-gray-700"
+                                    alt="Background"
+                                    className="w-full h-24 mt-3 object-cover rounded border border-gray-700"
                                     onError={e => {
                                         e.currentTarget.style.display =
                                             'none';
                                     }}
                                 />
 
+                            )}
+
+                        </div>
+
+                        <div className="border border-gray-700 p-4 rounded bg-gray-900">
+
+                            <div className="flex justify-between items-center mb-3">
+
+                                <div>
+
+                                    <label className="text-sm font-bold text-accent">
+                                        Custom Logo
+                                    </label>
+
+                                    <p className="text-xs text-gray-500 mt-1">
+                                        Replaces the Steam logo.
+                                    </p>
+
+                                </div>
+
+                                {formData.logo_url && (
+
+                                    <button
+                                        type="button"
+                                        onClick={() =>
+                                            setFormData(
+                                                f => ({
+                                                    ...f,
+                                                    logo_url:
+                                                        ''
+                                                })
+                                            )
+                                        }
+                                        className="text-xs bg-red-900/40 hover:bg-red-900/70 text-red-400 border border-red-800 px-2 py-1 rounded font-bold"
+                                    >
+                                        Remove
+                                    </button>
+
+                                )}
+
                             </div>
 
-                        )}
+                            <input
+                                type="file"
+                                accept="image/*"
+                                disabled={
+                                    uploadingLogo
+                                }
+                                onChange={e =>
+                                    uploadLogo(
+                                        e.target.files &&
+                                        e.target.files[0]
+                                    )
+                                }
+                                className="w-full bg-gray-950 border border-gray-700 rounded p-1 text-white text-sm font-bold"
+                            />
+
+                            {uploadingLogo && (
+
+                                <p className="text-xs text-gray-500 mt-2 font-bold">
+                                    Uploading…
+                                </p>
+
+                            )}
+
+                            {formData.logo_url && (
+
+                                <div className="mt-3 h-24 bg-gray-950 rounded border border-gray-700 flex items-center justify-center p-3">
+
+                                    <img
+                                        src={
+                                            formData.logo_url
+                                        }
+                                        alt="Logo"
+                                        className="max-h-full max-w-full object-contain"
+                                        onError={e => {
+                                            e.currentTarget.style.display =
+                                                'none';
+                                        }}
+                                    />
+
+                                </div>
+
+                            )}
+
+                        </div>
 
                     </div>
 
@@ -4952,10 +5103,10 @@ function ProjectFormModal({
 
                             </div>
 
-                            <div className="project-preview">
+                            <div className="relative h-48 rounded-xl overflow-hidden border border-gray-700 bg-darker">
 
                                 <div
-                                    className="absolute inset-0 bg-cover bg-no-repeat opacity-50"
+                                    className="absolute inset-0 bg-cover bg-no-repeat opacity-60"
                                     style={{
                                         backgroundImage:
                                             `url("${previewBackground}")`,
@@ -4967,7 +5118,7 @@ function ProjectFormModal({
 
                                 <div className="absolute inset-0 bg-gradient-to-t from-darker via-darker/60 to-transparent" />
 
-                                <div className="relative z-10 p-6 flex flex-col h-full justify-end">
+                                <div className="relative z-10 p-6 h-full flex flex-col justify-end">
 
                                     {previewLogo && (
 
@@ -4975,26 +5126,22 @@ function ProjectFormModal({
                                             src={
                                                 previewLogo
                                             }
-                                            alt=""
-                                            className="max-h-14 max-w-[170px] object-contain mb-3"
+                                            alt="Preview Logo"
+                                            className="max-h-16 max-w-[200px] object-contain mb-3"
                                             style={{
                                                 transform:
                                                     `translate(${Number(formData.logo_offset_x) || 0}px, ${Number(formData.logo_offset_y) || 0}px)`
-                                            }}
-                                            onError={e => {
-                                                e.currentTarget.style.display =
-                                                    'none';
                                             }}
                                         />
 
                                     )}
 
-                                    <div className="text-xl font-bold text-white">
+                                    <h3 className="text-2xl font-bold text-white">
                                         {
                                             formData.title ||
-                                            'Project title'
+                                            'Project Title'
                                         }
-                                    </div>
+                                    </h3>
 
                                 </div>
 
@@ -5119,13 +5266,15 @@ function ProjectFormModal({
                         <button
                             type="submit"
                             disabled={
-                                uploadingBg
+                                uploadingBg ||
+                                uploadingLogo
                             }
                             className="flex-1 bg-accent hover:bg-cyan-400 disabled:opacity-50 text-darker font-bold py-2 rounded"
                         >
-                            {project
-                                ? 'Save project'
-                                : 'Create project'
+                            {
+                                project
+                                    ? 'Save project'
+                                    : 'Create project'
                             }
                         </button>
 
@@ -5175,6 +5324,5 @@ ReactDOM
     );
 
 </script>
-
 </body>
 </html>
