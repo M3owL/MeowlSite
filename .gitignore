@@ -1,0 +1,17 @@
+node_modules/
+dist/
+dist-ssr/
+.ssr-test/
+*.local
+.env
+.env.*
+!.env.example
+.DS_Store
+Thumbs.db
+.vite/
+*.log
+npm-debug.log*
+yarn-error.log*
+.idea/
+.vscode/*
+!.vscode/extensions.json
