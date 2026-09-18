@@ -212,6 +212,12 @@ Expected tables:
 RPCs used by the public review flow: `get_invite_code_preview(input_code)`,
 `submit_review_with_code(input_code, input_review_text, input_ratings)`.
 
+Migrations live in `supabase/`. Run them in the dashboard's SQL Editor.
+
+- `01-fix-ambiguous-submit-rpc.sql` — drops duplicate overloads of
+  `submit_review_with_code` that caused
+  *"Could not choose the best candidate function"*. Safe to re-run.
+
 ---
 
 ## Other bugs fixed in this pass
