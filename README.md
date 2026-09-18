@@ -112,28 +112,46 @@ compilation.
 
 ## Project layout
 
+The Vite app lives in `app/`. The repository **root** holds the built site
+(`index.html`, `assets/`, `favicon.svg`) because GitHub Pages serves this repo
+from `main` / root — see [Deploying](#deploying).
+
 ```
-src/
-├── main.jsx                 entry point
-├── App.jsx                  state, data loading, realtime, modal routing
-├── index.css                Tailwind + design tokens
-├── lib/
-│   ├── steam.js             app-id parsing + CDN fallback chains
-│   ├── supabase.js          client singleton, auth storage, error messages
-│   ├── storage.js           single shared upload helper
-│   ├── normalize.js         one stable row shape for every component
-│   ├── format.js            dates, rating maths, local avatar fallback
-│   └── constants.js         tabs, bucket limits, defaults
-├── components/
-│   ├── SteamImage.jsx       walks candidate URLs, renders fallback
-│   ├── ProjectCard.jsx      art-forward card
-│   ├── ReviewCard.jsx
-│   ├── PinnedReviews.jsx
-│   ├── Header.jsx
-│   ├── Footer.jsx
-│   └── ui/                  Modal, Field, Stars, RatingEditor, Toast, ErrorBanner
-├── tabs/                    AboutTab, PortfolioTab, ReviewsTab, AdminTab
-└── modals/                  Login, InviteCode, GenerateCode, ReviewForm, ProjectForm
+/                        <- what GitHub Pages actually serves
+├── index.html           <- BUILT, do not edit by hand
+├── assets/              <- BUILT, do not edit by hand
+├── favicon.svg          <- BUILT
+├── package.json         <- scripts + dependencies
+├── vite.config.js
+├── tailwind.config.js
+├── postcss.config.js
+├── tools/publish.mjs    <- copies dist/ to the repo root
+├── .github/workflows/   <- optional Actions deploy
+└── app/                 <- the actual source
+    ├── index.html       <- Vite template
+    ├── public/
+    ├── scripts/         <- test suites
+    └── src/
+        ├── main.jsx     entry point
+        ├── App.jsx      state, data loading, realtime, modal routing
+        ├── index.css    Tailwind + design tokens
+        ├── lib/
+        │   ├── steam.js       app-id parsing + CDN fallback chains
+        │   ├── supabase.js    client singleton, auth storage, error messages
+        │   ├── storage.js     single shared upload helper
+        │   ├── normalize.js   one stable row shape for every component
+        │   ├── format.js      dates, rating maths, local avatar fallback
+        │   └── constants.js   tabs, bucket limits, defaults
+        ├── components/
+        │   ├── SteamImage.jsx walks candidate URLs, renders fallback
+        │   ├── ProjectCard.jsx art-forward card
+        │   ├── ReviewCard.jsx
+        │   ├── PinnedReviews.jsx
+        │   ├── Header.jsx
+        │   ├── Footer.jsx
+        │   └── ui/           Modal, Field, Stars, RatingEditor, Toast, ErrorBanner
+        ├── tabs/             AboutTab, PortfolioTab, ReviewsTab, AdminTab
+        └── modals/           Login, InviteCode, GenerateCode, ReviewForm, ProjectForm
 ```
 
 ---
@@ -142,9 +160,10 @@ src/
 
 ```bash
 npm install
-npm run dev      # http://localhost:5173
-npm run build    # outputs to dist/
-npm run preview  # serve the production build
+npm run dev          # http://localhost:5173
+npm run build        # build + publish to the repo root
+npm run preview      # serve the production build
+npm run verify       # run both test suites
 ```
 
 To point at a different Supabase project, copy `.env.example` to `.env` and fill it in.
@@ -153,13 +172,23 @@ To point at a different Supabase project, copy `.env.example` to `.env` and fill
 
 ## Deploying
 
-`.github/workflows/deploy.yml` builds and publishes on every push to `main`.
+**It just works on push.** GitHub Pages on this repo is set to
+*Deploy from a branch → main → / (root)*, so the built files are committed at the
+repo root and `git push` is the whole deploy.
 
-One-time setup, because Pages is currently configured to serve raw files from the branch:
+Run `npm run build` before committing any change to `app/`, otherwise the root
+copy goes stale. The build also clears old hashed bundles from `assets/`.
+
+### Optional: switch to GitHub Actions
+
+`.github/workflows/deploy.yml` builds and deploys on every push to `main`. If you
+prefer that (no build artefacts in the repo, no manual rebuilds), then:
 
 1. Repo → **Settings** → **Pages**
 2. Under **Build and deployment** → **Source**, select **GitHub Actions**
-3. Push to `main` (or run the workflow manually from the Actions tab)
+
+Do it in that order. Switching the source *before* the workflow has ever run
+leaves Pages with nothing to serve.
 
 The site is served from `/MeowlSite/`, which is why `vite.config.js` sets
 `base: '/MeowlSite/'`. If you move to a custom domain, set `VITE_BASE=/`.

@@ -6,10 +6,11 @@
   "description": "M3owL - Polish game translator portfolio",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build && node tools/publish.mjs",
     "preview": "vite preview --port 4173",
-    "test": "node scripts/test-steam.mjs",
-    "test:render": "vite build --ssr scripts/render-test.jsx --outDir .ssr-test --logLevel warn && node .ssr-test/render-test.js"
+    "test": "node app/scripts/test-steam.mjs",
+    "test:render": "vite build --ssr scripts/render-test.jsx --outDir ../.ssr-test --logLevel warn && node .ssr-test/render-test.js",
+    "verify": "npm run test && npm run test:render"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.45.4",
