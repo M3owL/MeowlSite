@@ -11,6 +11,7 @@ import { renderToStaticMarkup } from 'react-dom/server';
 
 import Header from '../src/components/Header';
 import Footer from '../src/components/Footer';
+import Modal from '../src/components/ui/Modal';
 import ProjectCard from '../src/components/ProjectCard';
 import ReviewCard from '../src/components/ReviewCard';
 import PinnedReviews from '../src/components/PinnedReviews';
@@ -294,8 +295,37 @@ expect(
   'project form warns on unparseable link',
   formBroken,
   'Could not read an app id from that link',
-  'NO ARTWORK SOURCE',
+  'NO ARTWORK',
 );
+
+// --- modal shell: the scroll/centring regression ---------------------------
+// The old shell put `overflow-y-auto` and `items-center` on the same element,
+// which pushed the top of a tall panel above the scroll origin where it could
+// not be reached. Centring must happen on an inner `min-h-full` wrapper, and
+// the panel must be capped to the viewport.
+const modalHtml = render(
+  'Modal shell',
+  <Modal title="Test" onClose={noop}>
+    <p>body</p>
+  </Modal>,
+);
+expect('modal centres inside a min-h-full wrapper', modalHtml, 'min-h-full');
+expect('modal panel is capped to the viewport', modalHtml, 'max-h-[calc(100dvh');
+expectNot(
+  'modal never centres the scroll container itself',
+  modalHtml,
+  'overflow-y-auto bg-black/80 flex items-center',
+);
+
+// The project form must lay out in two columns on wide screens, otherwise it
+// runs past the bottom of the viewport.
+expect(
+  'project form is two-column on desktop',
+  formSeeded,
+  'lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)]',
+  'aspect-video',
+);
+expect('project form footer is outside the scroll body', formSeeded, 'form="project-form"');
 
 expect(
   'invite code modal',
