@@ -20,9 +20,16 @@ const repoRoot = path.dirname(fileURLToPath(import.meta.url));
  * Actions workflow in .github/workflows/deploy.yml can take over later if the
  * Pages source is switched to "GitHub Actions".
  *
- * If you ever move to a custom domain, set VITE_BASE=/ .
+ * BASE: the site is served from the apex of the custom domain
+ * https://polishforgames.com/ (declared by the CNAME file at the repo root),
+ * so asset URLs must be root-relative and must NOT carry the repo name.
+ * GitHub Pages 301-redirects https://m3owl.github.io/MeowlSite/ to the custom
+ * domain, so a /MeowlSite/ base makes every asset 404 and the page renders
+ * blank white.
+ *
+ * Override with VITE_BASE=/MeowlSite/ only if the custom domain is removed.
  */
-const BASE = process.env.VITE_BASE ?? '/MeowlSite/';
+const BASE = process.env.VITE_BASE ?? '/';
 
 export default defineConfig({
   root: 'app',
