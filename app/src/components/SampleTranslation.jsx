@@ -20,9 +20,16 @@ const COPY = {
 
 /* ------------------------------------------------------------------ icons */
 
-function NoteIcon({ className = 'h-5 w-5' }) {
+/*
+ * Size lives in `width`/`height`, not in the default `className`: a caller
+ * passing its own class used to replace `h-5 w-5` outright, and an SVG with no
+ * intrinsic size expanded to fill the flex row.
+ */
+function NoteIcon({ className = '', size = 20 }) {
   return (
     <svg
+      width={size}
+      height={size}
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"

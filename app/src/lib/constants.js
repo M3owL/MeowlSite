@@ -20,7 +20,7 @@ export const BRAND = {
   availability: {
     open: true, // PLACEHOLDER -- flip to false when you stop taking work
     label: 'Taking on new projects',
-    note: 'Typical reply within 24 hours, Mon–Fri.',
+    note: 'Replies usually within 10 hours, weekends included.',
   },
 };
 
@@ -64,18 +64,6 @@ export const STATS = [
   // Started in 2026. Keep this honest and specific -- do not inflate it.
   { id: 'experience', label: 'Experience', value: 6, suffix: ' months+', live: null },
 ];
-
-export const TOOLS = [
-  'memoQ',
-  'SDL Trados',
-  'Crowdin',
-  'Lokalise',
-  'Passolo',
-];
-
-export const FORMATS = ['.xliff', '.po', '.csv', '.json', '.docx', '.srt'];
-
-export const ENGINES = ['Unity', 'Unreal Engine', 'Godot', 'GameMaker'];
 
 // --------------------------------------------------------------- services
 
@@ -160,31 +148,29 @@ export const PROCESS = [
 // ------------------------------------------------------------ rates
 
 /**
- * PLACEHOLDER -- these are indicative EN→PL game-localization ranges, not a
- * quote. Confirm every figure before publishing, or delete the `from` values
- * and keep the model only.
+ * Only the per-word rate is confirmed. Everything else is quoted per project,
+ * because inventing a figure the owner has not agreed to is worse than saying
+ * "on request".
  */
 export const RATES = [
-  { service: 'In-game text & UI', unit: 'per word', from: '€0.07' },
-  { service: 'Store page & marketing copy', unit: 'per word', from: '€0.09' },
-  { service: 'Subtitles', unit: 'per video minute', from: '€3.00' },
-  { service: 'LQA / linguistic testing', unit: 'per hour', from: '€25' },
-  { service: 'Voice-over scripts', unit: 'per line', from: '€1.20' },
-  { service: 'Glossary & TM setup', unit: 'per project', from: '€40' },
+  { service: 'Translation, English to Polish', unit: 'per word', from: '$0.015' },
+  { service: 'Store page & marketing copy', unit: 'per word', from: '$0.015' },
+  { service: 'Subtitles', unit: 'per video minute', from: 'On request' },
+  { service: 'LQA / linguistic testing', unit: 'per hour', from: 'On request' },
+  { service: 'Voice-over scripts', unit: 'per line', from: 'On request' },
+  { service: 'Glossary & TM setup', unit: 'per project', from: 'On request' },
 ];
 
 export const RATE_NOTES = {
   model: [
-    'Per word for text — the number you get is the number you pay.',
-    'Per hour for LQA, because the build decides how long it takes.',
-    'Fixed price per project if you would rather have one number upfront.',
+    'Per word for translation — the number you get is the number you pay.',
+    'Fixed price per project for anything that is not straight text.',
   ],
-  // PLACEHOLDER -- confirm.
-  minimum: '€40 minimum order.',
+  payment:
+    'Payment by PayPal or bank transfer. If you need something else, ask — I am happy to work it out.',
   drivers: [
     'Volume — larger batches cost less per word.',
     'Source quality — clean strings are faster than a spreadsheet of fragments.',
-    'Format — .xliff and .po import straight into my CAT tool; a PDF does not.',
     'Deadline — anything under 72 hours carries a rush fee.',
   ],
   rush: 'Rush delivery (under 72 hours): +30%.',
@@ -234,8 +220,10 @@ export const CONTACT = {
     { id: 'discord', label: 'Discord', value: '_m3owl', href: null },
   ],
   // PLACEHOLDER -- confirm.
-  responseTime: 'Usually within 24 hours, Monday to Friday.',
+  // The 10 hours is a promise the owner makes, not an estimate -- keep it.
+  responseTime: 'Within 10 hours of your message, weekends included.',
   timezone: 'CET (UTC+1)',
+  payment: 'PayPal or bank transfer. Need something else? Ask — I am happy to work it out.',
 };
 
 // -------------------------------------------------- unchanged primitives

@@ -17,12 +17,13 @@ const COPY = {
   eyebrow: 'Contact',
   responseLabel: 'Response time',
   timezoneLabel: 'Timezone',
+  paymentLabel: 'Payment',
   sendHeading: 'What to send me',
   copyLabel: 'Copy handle',
   copiedLabel: 'Copied',
   fallbackPrefix: 'Discord handle:',
   sendList: [
-    'The files, or a link to them. .xliff and .po import straight into my CAT tool; a PDF does not.',
+    'The files, or a link to them — any format is fine.',
     'A word count, even a rough one, so I can price the job.',
     'Your deadline, and whether it is a hard one.',
     'Screenshots or a line of context for anything the text cannot explain on its own.',
@@ -31,9 +32,22 @@ const COPY = {
 
 /* ------------------------------------------------------------------ icons */
 
-function MailIcon({ className = 'h-5 w-5' }) {
+/*
+ * Size lives in the `width`/`height` attributes, not in the default
+ * `className`.
+ *
+ * The previous version defaulted to `className = 'h-5 w-5'`, which every caller
+ * silently replaced the moment it passed its own class for colour or margin.
+ * An SVG with no intrinsic size and `shrink-0` then expanded to fill the flex
+ * row, squeezing the text beside it into a sliver. Attributes cannot be
+ * overridden by a class, so this cannot come back.
+ */
+
+function MailIcon({ className = '', size = 20 }) {
   return (
     <svg
+      width={size}
+      height={size}
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
@@ -50,9 +64,11 @@ function MailIcon({ className = 'h-5 w-5' }) {
   );
 }
 
-function DiscordIcon({ className = 'h-5 w-5' }) {
+function DiscordIcon({ className = '', size = 20 }) {
   return (
     <svg
+      width={size}
+      height={size}
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
@@ -73,9 +89,11 @@ function DiscordIcon({ className = 'h-5 w-5' }) {
   );
 }
 
-function CopyIcon({ className = 'h-4 w-4' }) {
+function CopyIcon({ className = '', size = 16 }) {
   return (
     <svg
+      width={size}
+      height={size}
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
@@ -92,9 +110,11 @@ function CopyIcon({ className = 'h-4 w-4' }) {
   );
 }
 
-function CheckIcon({ className = 'h-4 w-4' }) {
+function CheckIcon({ className = '', size = 16 }) {
   return (
     <svg
+      width={size}
+      height={size}
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
@@ -110,9 +130,11 @@ function CheckIcon({ className = 'h-4 w-4' }) {
   );
 }
 
-function ClockIcon({ className = 'h-5 w-5' }) {
+function ClockIcon({ className = '', size = 20 }) {
   return (
     <svg
+      width={size}
+      height={size}
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
@@ -129,9 +151,11 @@ function ClockIcon({ className = 'h-5 w-5' }) {
   );
 }
 
-function GlobeIcon({ className = 'h-5 w-5' }) {
+function GlobeIcon({ className = '', size = 20 }) {
   return (
     <svg
+      width={size}
+      height={size}
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
@@ -145,6 +169,28 @@ function GlobeIcon({ className = 'h-5 w-5' }) {
       <circle cx="12" cy="12" r="8.5" />
       <path d="M3.5 12h17" />
       <path d="M12 3.5c2.4 2.4 3.6 5.4 3.6 8.5s-1.2 6.1-3.6 8.5c-2.4-2.4-3.6-5.4-3.6-8.5S9.6 5.9 12 3.5Z" />
+    </svg>
+  );
+}
+
+function CardIcon({ className = '', size = 20 }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.7"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      aria-hidden="true"
+      focusable="false"
+    >
+      <rect x="3" y="5.5" width="18" height="13" rx="2" />
+      <path d="M3 10h18" />
+      <path d="M7 14.5h3" />
     </svg>
   );
 }
@@ -299,8 +345,16 @@ export default function ContactTab({ onToast }) {
             </div>
           </Reveal>
 
+          <Reveal index={2} className="flex gap-3 rounded-xl border border-line bg-surface-2/40 p-5">
+            <CardIcon className="mt-0.5 shrink-0 text-accent" />
+            <div>
+              <h3 className="text-caption font-semibold text-ink">{COPY.paymentLabel}</h3>
+              <p className="meta mt-1">{CONTACT.payment}</p>
+            </div>
+          </Reveal>
+
           <Reveal
-            index={2}
+            index={3}
             className={`rounded-xl border p-5 ${
               BRAND.availability.open
                 ? 'border-emerald-400/25 bg-emerald-400/[0.06]'

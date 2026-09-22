@@ -1,4 +1,4 @@
-import { ABOUT, BRAND, CONTACT, ENGINES, FORMATS, STATS, TOOLS } from '../lib/constants';
+import { ABOUT, BRAND, CONTACT, STATS } from '../lib/constants';
 import Reveal from '../components/ui/Reveal';
 import { useCountUp, useInView } from '../lib/motion';
 
@@ -18,12 +18,6 @@ const COPY = {
   seeWork: 'See the work',
   statsEyebrow: 'At a glance',
   bioHeading: 'About me',
-  toolkitHeading: 'Toolkit',
-  groups: [
-    { id: 'tools', label: 'CAT tools', items: TOOLS },
-    { id: 'formats', label: 'File formats', items: FORMATS },
-    { id: 'engines', label: 'Engines', items: ENGINES },
-  ],
 };
 
 /* ------------------------------------------------------------------ icons */
@@ -195,28 +189,6 @@ export default function AboutTab({ projects = [], onNavigate }) {
           {ABOUT.body.map((paragraph, index) => (
             <Reveal as="p" key={paragraph} index={index} className="text-body-lg text-muted">
               {paragraph}
-            </Reveal>
-          ))}
-        </div>
-      </section>
-
-      {/* ---------------------------------------------------------- toolkit */}
-      <section aria-labelledby="about-toolkit">
-        <Reveal as="h2" id="about-toolkit" className="text-h2">
-          {COPY.toolkitHeading}
-        </Reveal>
-
-        <div className="mt-6 grid gap-8 sm:grid-cols-3">
-          {COPY.groups.map((group, index) => (
-            <Reveal key={group.id} index={index}>
-              <h3 className="eyebrow text-muted">{group.label}</h3>
-              <ul className="mt-3 flex flex-wrap gap-2">
-                {group.items.map((item) => (
-                  <li key={item} className="chip">
-                    {item}
-                  </li>
-                ))}
-              </ul>
             </Reveal>
           ))}
         </div>

@@ -24,9 +24,18 @@ const COPY = {
 
 /* ------------------------------------------------------------------ icons */
 
-function CheckIcon({ className = 'h-4 w-4' }) {
+/*
+ * Size lives in the `width`/`height` attributes, not in the default
+ * `className`. Callers pass their own class for colour and margin, which used
+ * to replace the `h-4 w-4` default outright -- leaving an SVG with no intrinsic
+ * size that expanded to fill the flex row and squeezed the text beside it.
+ */
+
+function CheckIcon({ className = '', size = 16 }) {
   return (
     <svg
+      width={size}
+      height={size}
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
@@ -42,9 +51,11 @@ function CheckIcon({ className = 'h-4 w-4' }) {
   );
 }
 
-function ClockIcon({ className = 'h-4 w-4' }) {
+function ClockIcon({ className = '', size = 16 }) {
   return (
     <svg
+      width={size}
+      height={size}
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
@@ -61,9 +72,11 @@ function ClockIcon({ className = 'h-4 w-4' }) {
   );
 }
 
-function SliderIcon({ className = 'h-4 w-4' }) {
+function SliderIcon({ className = '', size = 16 }) {
   return (
     <svg
+      width={size}
+      height={size}
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
@@ -128,7 +141,9 @@ export default function RateCard({ onNavigate }) {
             ))}
           </ul>
 
-          <p className="chip-accent mt-5">{RATE_NOTES.minimum}</p>
+          <p className="mt-5 rounded-lg border border-line bg-surface-2/40 p-4 text-body text-muted">
+            {RATE_NOTES.payment}
+          </p>
         </div>
 
         <div>
