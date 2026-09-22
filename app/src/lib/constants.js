@@ -66,7 +66,8 @@ export const STATS = [
   // PLACEHOLDER -- replace with real numbers or remove the tile.
   { id: 'words', label: 'Words translated', value: 50000, suffix: '+', live: null },
   { id: 'pairs', label: 'Language pairs', value: 2, suffix: '', live: null },
-  { id: 'years', label: 'Years active', value: 2, suffix: '+', live: null },
+  // Started in 2026. Keep this honest and specific -- do not inflate it.
+  { id: 'experience', label: 'Experience', value: 6, suffix: ' months+', live: null },
 ];
 
 export const TOOLS = [

@@ -1,9 +1,10 @@
 # MeowlSite
 
-Portfolio site for **M3owL** (Jakub K.) — Polish game translator and localization junior.
-Shows translation history, client feedback, and an invite-code review flow backed by Supabase.
+Portfolio site for **Jakub Kłapot** — Polish game translator. English to Polish game
+localization. Shows translation history, client reviews, and an invite-code review flow
+backed by Supabase.
 
-Live: https://m3owl.github.io/MeowlSite/
+Live: https://polishforgames.com/
 
 ---
 
