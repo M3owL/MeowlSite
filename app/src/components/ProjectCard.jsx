@@ -6,14 +6,15 @@ import { parseSteamAppId, bannerCandidatesFor, logoCandidatesFor } from '../lib/
 /**
  * Project card.
  *
- * Two variants, both driven by the same data:
+ * One shape for every project. An earlier pass gave the pinned project a
+ * full-width featured variant with the art beside the copy; at 1440px that
+ * card ran to ~765px, taller than the viewport, so the Portfolio tab looked
+ * like it held a single project. Pinning still sorts a project to the top and
+ * still marks it -- with an accent border and a badge -- but it no longer
+ * changes the card's size.
  *
- *   featured  a pinned project -- full grid width, art beside the copy from
- *             `sm:` up, h2 title
- *   standard  everything else -- one grid cell, stacked 16:9 art, h3 title
- *
- * The art frame has a *fixed* aspect ratio on purpose. Steam's fallback chain
- * can land on library_hero.jpg (~3.10:1), header.jpg (~2.14:1) or
+ * The art frame has a *fixed* 16:9 aspect ratio on purpose. Steam's fallback
+ * chain can land on library_hero.jpg (~3.10:1), header.jpg (~2.14:1) or
  * capsule_616x353.jpg (~1.75:1), and with an arbitrary frame the winner
  * silently changed the crop. A fixed frame means the crop is a decision, not an
  * accident.
@@ -96,7 +97,6 @@ export default function ProjectCard({
   onTogglePin,
   onMove,
   busy = false,
-  featured,
 }) {
   const appId = parseSteamAppId(project.steamLink);
 
@@ -106,8 +106,6 @@ export default function ProjectCard({
   const pinnedReviews = project.pinnedReviews
     .map((id) => reviews.find((review) => review.id === id))
     .filter(Boolean);
-
-  const isFeatured = featured ?? Boolean(project.pinned);
 
   const [artLoading, setArtLoading] = useState(banners.length > 0);
   const [expanded, setExpanded] = useState(false);
@@ -122,8 +120,7 @@ export default function ProjectCard({
    * Clamp the admin's logo nudge so the wordmark can never be pushed out of the
    * art frame. The logo is anchored `bottom-4 left-4`, so the travel available
    * is the frame box minus the logo box minus the inset on both sides -- all of
-   * which is layout, not paint, so ResizeObserver keeps it honest when the
-   * frame changes ratio at a breakpoint.
+   * which is layout, not paint, so ResizeObserver keeps it honest.
    */
   useEffect(() => {
     const frame = artRef.current;
@@ -158,7 +155,7 @@ export default function ProjectCard({
     observer.observe(frame);
     observer.observe(logo);
     return () => observer.disconnect();
-  }, [project.logo_url, appId, isFeatured]);
+  }, [project.logo_url, appId]);
 
   /** Long details get clamped, but only offer the toggle when they really clip. */
   useEffect(() => {
@@ -188,32 +185,16 @@ export default function ProjectCard({
     <div className="h-full w-full bg-gradient-to-br from-surface-3 via-surface-2 to-void" />
   );
 
-  const artSizes = isFeatured
-    ? '(min-width: 640px) 55vw, 100vw'
-    : '(min-width: 1280px) 33vw, (min-width: 768px) 50vw, 100vw';
-
   return (
     <article
       className={`group lift card-interactive relative flex w-full flex-col overflow-hidden ${
-        isFeatured
-          ? 'border-accent/40 shadow-glow-sm sm:min-h-[300px] sm:flex-row sm:flex-wrap'
-          : ''
+        project.pinned ? 'border-accent/40' : ''
       }`}
     >
-      {/*
-       * Featured cards set the art and the copy side by side from `sm:` up.
-       * Stacked, a full-width 21:9 frame plus its copy measured ~765px tall at
-       * 1440px -- taller than the viewport, which made the tab read as though it
-       * held a single project. `flex-wrap` keeps `PinnedReviews` (which is
-       * `w-full`) on its own row underneath without needing another wrapper.
-       */}
+      {/* ---- fixed-ratio artwork frame ---- */}
       <div
         ref={artRef}
-        className={`relative overflow-hidden bg-surface-2 ${
-          isFeatured
-            ? 'aspect-[16/9] w-full sm:aspect-auto sm:w-[55%] sm:shrink-0'
-            : 'aspect-[16/9] w-full'
-        }`}
+        className="relative aspect-[16/9] w-full overflow-hidden bg-surface-2"
       >
         {artLoading && <div className="skeleton absolute inset-0 rounded-none" aria-hidden="true" />}
 
@@ -221,7 +202,7 @@ export default function ProjectCard({
           candidates={banners}
           fallback={artFallback}
           alt=""
-          sizes={artSizes}
+          sizes="(min-width: 1280px) 33vw, (min-width: 768px) 50vw, 100vw"
           onLoadingChange={setArtLoading}
           className="h-full w-full object-cover transition-transform duration-700 ease-expo group-hover:scale-[1.06]"
           style={{
@@ -250,23 +231,15 @@ export default function ProjectCard({
               candidates={logos}
               fallback={null}
               alt={`${project.title} logo`}
-              className={`w-auto max-w-full object-contain drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)] ${
-                isFeatured ? 'max-h-14 sm:max-h-20' : 'max-h-10 sm:max-h-12'
-              }`}
+              className="max-h-10 w-auto max-w-full object-contain drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)] sm:max-h-12"
             />
           </span>
         )}
       </div>
 
       {/* ---- content ---- */}
-      <div
-        className={`flex min-w-0 flex-1 flex-col gap-3 ${
-          isFeatured ? 'justify-center p-6 sm:p-7' : 'p-5'
-        }`}
-      >
-        <h3 className={`font-display font-semibold text-ink ${isFeatured ? 'text-h2' : 'text-h3'}`}>
-          {project.title}
-        </h3>
+      <div className="flex min-w-0 flex-1 flex-col gap-3 p-5">
+        <h3 className="font-display text-h3 font-semibold text-ink">{project.title}</h3>
 
         {project.steamLink && (
           <a
@@ -305,16 +278,7 @@ export default function ProjectCard({
         )}
 
         {isAdmin && (
-          <div
-            /*
-             * `mt-auto` is what pins the admin row to the bottom of a
-             * content-sized card. The featured variant centres its whole column
-             * beside the art instead, so the auto margin would fight that.
-             */
-            className={`flex flex-wrap items-center gap-2 border-t border-line pt-4 ${
-              isFeatured ? '' : 'mt-auto'
-            }`}
-          >
+          <div className="mt-auto flex flex-wrap items-center gap-2 border-t border-line pt-4">
             <button
               type="button"
               disabled={busy}

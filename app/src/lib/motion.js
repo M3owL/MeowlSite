@@ -35,8 +35,12 @@ export function usePrefersReducedMotion() {
  * Observes a node and reports when it enters the viewport.
  * Returns `[ref, inView]`. Falls back to "always in view" where
  * IntersectionObserver is unavailable, so content is never hidden.
+ *
+ * The threshold is deliberately low. At 0.15 a tall section had to be a sixth
+ * of the way on screen before it faded in, which reads as content missing
+ * rather than content arriving.
  */
-export function useInView({ threshold = 0.15, rootMargin = '0px 0px -8% 0px', once = true } = {}) {
+export function useInView({ threshold = 0.05, rootMargin = '0px 0px -4% 0px', once = true } = {}) {
   const ref = useRef(null);
   const [inView, setInView] = useState(false);
 

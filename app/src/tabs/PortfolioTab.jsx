@@ -1,6 +1,5 @@
 import { useMemo, useState } from 'react';
 import ProjectCard from '../components/ProjectCard';
-import Reveal from '../components/ui/Reveal';
 import { getSupabase } from '../lib/supabase';
 import { moveItem } from '../lib/format';
 
@@ -34,14 +33,18 @@ function PlusIcon() {
 /**
  * Portfolio.
  *
- * The old layout was one uniform `grid-cols-1 lg:grid-cols-2 xl:grid-cols-3`
- * with `items-stretch` and a fixed `min-h-[340px]` per card, so a pinned
- * project looked exactly like every other project and one verbose `details`
- * blob stretched its whole row.
+ * Every project renders in one uniform grid, pinned first. An earlier pass
+ * hoisted pinned projects into full-width featured cards; that card was taller
+ * than the viewport at 1440px, so the tab looked like it held a single project
+ * and everything else only appeared after scrolling. Pinning now only changes
+ * the order and the card's accent border.
  *
- * Now the pinned projects are hoisted out of the grid as full-width featured
- * cards, and everything else falls into a normal grid where content sizes the
- * card. Sorting is unchanged: pinned first, then `sort_order`.
+ * The cards are also deliberately not wrapped in a scroll-reveal. They start at
+ * `opacity: 0` and only fade in once they intersect the viewport, which is
+ * exactly the "I can only see one project" behaviour this replaces. The tab
+ * transition still animates the whole panel in.
+ *
+ * Sorting is unchanged: pinned first, then `sort_order`.
  */
 export default function PortfolioTab({
   projects,
@@ -56,17 +59,13 @@ export default function PortfolioTab({
   const sorted = useMemo(() => sortProjects(projects), [projects]);
 
   /**
-   * `index` stays the position in the *full* sorted list -- it is what the
-   * reorder buttons write back to `sort_order`, so it must not be re-based to
-   * the featured or grid slice.
+   * `index` is the position in the *full* sorted list -- it is what the reorder
+   * buttons write back to `sort_order`, so it must not be re-based.
    */
   const rows = useMemo(
     () => sorted.map((project, index) => ({ project, index })),
     [sorted],
   );
-
-  const featured = rows.filter((row) => row.project.pinned);
-  const rest = rows.filter((row) => !row.project.pinned);
 
   const client = getSupabase();
 
@@ -126,19 +125,6 @@ export default function PortfolioTab({
     });
   };
 
-  const cardProps = (row) => ({
-    project: row.project,
-    reviews,
-    isAdmin,
-    index: row.index,
-    total: sorted.length,
-    busy,
-    onEdit: openProjectModal,
-    onDelete: deleteProject,
-    onTogglePin: togglePin,
-    onMove: move,
-  });
-
   return (
     <div className="relative">
       <header className="section-head">
@@ -162,22 +148,22 @@ export default function PortfolioTab({
       {sorted.length === 0 ? (
         <p className="py-16 text-center text-body-lg text-muted">No projects added yet.</p>
       ) : (
-        <div className="space-y-6">
-          {featured.map((row) => (
-            <Reveal key={row.project.id} className="block">
-              <ProjectCard {...cardProps(row)} featured />
-            </Reveal>
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
+          {rows.map((row) => (
+            <ProjectCard
+              key={row.project.id}
+              project={row.project}
+              reviews={reviews}
+              isAdmin={isAdmin}
+              index={row.index}
+              total={sorted.length}
+              busy={busy}
+              onEdit={openProjectModal}
+              onDelete={deleteProject}
+              onTogglePin={togglePin}
+              onMove={move}
+            />
           ))}
-
-          {rest.length > 0 && (
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
-              {rest.map((row, position) => (
-                <Reveal key={row.project.id} index={position} className="flex min-w-0">
-                  <ProjectCard {...cardProps(row)} featured={false} />
-                </Reveal>
-              ))}
-            </div>
-          )}
         </div>
       )}
     </div>
