@@ -221,8 +221,8 @@ export default function ReviewFormModal({ review, onSave, onCancel, onError }) {
           </div>
         </Section>
 
-        <Section title="Feedback">
-          <Field label="Feedback text">
+        <Section title="Review">
+          <Field label="Review text">
             <textarea
               value={form.text}
               onChange={(event) => patch({ text: event.target.value })}

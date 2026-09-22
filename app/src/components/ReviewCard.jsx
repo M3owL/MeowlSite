@@ -79,7 +79,7 @@ function ratingValue(entry) {
 }
 
 /**
- * One testimonial.
+ * One review.
  *
  * The reviewer's name used to be an <h3>, which put a person into the document
  * outline as a section. It is now a <p> inside a <figure>/<blockquote> pair --

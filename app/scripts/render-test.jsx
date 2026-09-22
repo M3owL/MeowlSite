@@ -16,9 +16,13 @@ import ProjectCard from '../src/components/ProjectCard';
 import ReviewCard from '../src/components/ReviewCard';
 import PinnedReviews from '../src/components/PinnedReviews';
 import AboutTab from '../src/tabs/AboutTab';
+import ServicesTab from '../src/tabs/ServicesTab';
 import PortfolioTab from '../src/tabs/PortfolioTab';
 import ReviewsTab from '../src/tabs/ReviewsTab';
+import ContactTab from '../src/tabs/ContactTab';
 import AdminTab from '../src/tabs/AdminTab';
+import Ambient from '../src/components/Ambient';
+import Reveal from '../src/components/ui/Reveal';
 import ProjectFormModal from '../src/modals/ProjectFormModal';
 import InviteCodeModal from '../src/modals/InviteCodeModal';
 import ReviewFormModal from '../src/modals/ReviewFormModal';
@@ -152,7 +156,7 @@ const adminCard = render(
     onMove={noop}
   />,
 );
-expect('admin controls present', adminCard, 'Edit', 'Delete', 'Pin', 'Pinned Feedbacks');
+expect('admin controls present', adminCard, 'Edit', 'Delete', 'Pin', 'Pinned reviews');
 expectNot('first card cannot move earlier', adminCard, 'aria-label="Move project earlier" disabled=""');
 expect('first card can move later', adminCard, 'aria-label="Move project later"');
 
@@ -355,17 +359,33 @@ expect(
 
 // -------------------------------------------------------------- chrome
 
+// The brand moved from the old M3owL handle to the owner's real name, and the
+// nav grew from three tabs to five. Assert the brand, every public tab, and the
+// tablist semantics the header now provides.
+const guestHeader = render(
+  'Header guest',
+  <Header activeTab="reviews" onTabChange={noop} isAdmin={false} onLogout={noop} />,
+);
 expect(
-  'header hides admin tab for guests',
-  render('Header guest', <Header activeTab="portfolio" onTabChange={noop} isAdmin={false} onLogout={noop} />),
-  'M3owL',
-  'Game Translation History',
+  'header shows the brand and every public tab',
+  guestHeader,
+  'Jakub Kłapot',
+  'About',
+  'Services',
+  'Portfolio',
+  'Reviews',
+  'Contact',
 );
-expectNot(
-  'guest header has no admin link',
-  render('Header guest', <Header activeTab="portfolio" onTabChange={noop} isAdmin={false} onLogout={noop} />),
-  'Admin Panel',
+expect(
+  'header exposes real tablist semantics',
+  guestHeader,
+  'role="tablist"',
+  'role="tab"',
+  'aria-selected="true"',
+  'aria-controls="tab-panel"',
+  'id="tab-reviews"',
 );
+expectNot('guest header has no admin link', guestHeader, 'Admin Panel');
 expect(
   'admin header shows admin tab',
   render('Header admin', <Header activeTab="admin" onTabChange={noop} isAdmin onLogout={noop} />),
@@ -374,14 +394,45 @@ expect(
 );
 
 expect('footer', render('Footer', <Footer />), '_m3owl');
+expect(
+  'footer links navigate',
+  render('Footer', <Footer onNavigate={noop} />),
+  '_m3owl',
+  'About',
+  'Contact',
+);
+
 expect('about tab', render('AboutTab', <AboutTab />), 'Polish Game Translator');
 expect(
   'pinned reviews strip',
   render('PinnedReviews', <PinnedReviews reviews={[review]} />),
-  'Pinned Feedbacks',
+  'Pinned reviews',
   'Studio Dev',
 );
-expect('admin tab', render('AdminTab', <AdminTab reviews={[review]} inviteCodes={[]} reloadReviews={noop} reloadCodes={noop} onError={noop} onToast={noop} openReviewModal={noop} openGenerateModal={noop} />), 'Admin Panel', 'Manage Feedbacks');
+expect(
+  'admin tab',
+  render('AdminTab', <AdminTab reviews={[review]} inviteCodes={[]} reloadReviews={noop} reloadCodes={noop} onError={noop} onToast={noop} openReviewModal={noop} openGenerateModal={noop} />),
+  'Admin Panel',
+  'Manage reviews',
+);
+
+// --------------------------------------------------- new in the redesign
+
+expect(
+  'services tab covers services, process and rates',
+  render('ServicesTab', <ServicesTab onNavigate={noop} />),
+  'Subtitles',
+  'Brief',
+  'Request a quote',
+);
+expect(
+  'contact tab exposes the real channels',
+  render('ContactTab', <ContactTab onToast={noop} />),
+  'jacob@polishforgames.com',
+  '_m3owl',
+);
+expect('ambient background layer renders', render('Ambient', <Ambient />), 'ambient');
+expect('reveal renders its children', render('Reveal', <Reveal>hello</Reveal>), 'reveal', 'hello');
 
 console.log(`\n${passed} passed, ${failed} failed`);
 process.exit(failed === 0 ? 0 : 1);

@@ -81,7 +81,7 @@ export default function AdminTab({
     setBusy(false);
     if (error) return onError(error.message);
     await reloadReviews();
-    onToast('Feedback deleted.');
+    onToast('Review deleted.');
   };
 
   const togglePublish = async (id, published) => {
@@ -144,7 +144,7 @@ export default function AdminTab({
         <div className="flex flex-wrap gap-3">
           <button type="button" onClick={() => openReviewModal(null)} className="btn-primary">
             <IconPlus />
-            Add Feedback
+            Add review
           </button>
 
           <button type="button" onClick={openGenerateModal} className="btn-ghost">
@@ -229,7 +229,7 @@ export default function AdminTab({
 
       <Reveal as="section" className="mb-12">
         <div className="mb-4 flex items-center gap-3">
-          <h3 className="text-h3">Manage Feedbacks</h3>
+          <h3 className="text-h3">Manage reviews</h3>
           {reviews.length > 0 && <span className="chip">{reviews.length}</span>}
         </div>
 

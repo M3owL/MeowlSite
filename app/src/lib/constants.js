@@ -30,7 +30,7 @@ export const NAV_TABS = [
   { id: 'about', label: 'About' },
   { id: 'services', label: 'Services' },
   { id: 'portfolio', label: 'Portfolio' },
-  { id: 'reviews', label: 'Testimonials' },
+  { id: 'reviews', label: 'Reviews' },
   { id: 'contact', label: 'Contact' },
 ];
 

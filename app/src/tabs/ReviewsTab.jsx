@@ -99,8 +99,8 @@ export default function ReviewsTab({ reviews, isAdmin, openCodeModal }) {
     <div className="relative">
       <div className="section-head">
         <div>
-          <p className="eyebrow">Testimonials</p>
-          <h2 className="mt-2 text-h1">Feedbacks</h2>
+          <p className="eyebrow">Reviews</p>
+          <h2 className="mt-2 text-h1">What clients say</h2>
         </div>
 
         {!isAdmin && (
@@ -132,7 +132,7 @@ export default function ReviewsTab({ reviews, isAdmin, openCodeModal }) {
                       <Stars value={summary.overall} size="lg" />
                       <span className="text-caption text-muted">
                         Based on {summary.contributors}{' '}
-                        {summary.contributors === 1 ? 'testimonial' : 'testimonials'}
+                        {summary.contributors === 1 ? 'review' : 'reviews'}
                       </span>
                     </div>
                   </div>

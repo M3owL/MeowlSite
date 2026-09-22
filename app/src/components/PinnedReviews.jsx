@@ -15,7 +15,7 @@ import { RatingBadge } from './ui/Stars';
  *          wrap, so two short reviews are not needlessly animated.
  *
  * The marquee renders the review list twice. The second copy is `aria-hidden`
- * so screen readers are not read the same testimonial twice.
+ * so screen readers are not read the same review twice.
  */
 export default function PinnedReviews({ reviews }) {
   const containerRef = useRef(null);
@@ -86,7 +86,7 @@ export default function PinnedReviews({ reviews }) {
         id={labelId}
         className="px-4 pb-2.5 pt-4 text-eyebrow font-semibold uppercase text-faint sm:px-5"
       >
-        Pinned Feedbacks
+        Pinned reviews
       </p>
 
       {/* ---- mobile + tablet: horizontal snap list, never a marquee ---- */}

@@ -422,7 +422,7 @@ export default function App() {
           onSubmitted={async () => {
             closeModal();
             await loadReviews();
-            setToast('Feedback submitted. Awaiting approval.');
+            setToast('Review submitted. Awaiting approval.');
           }}
         />
       )}
@@ -448,7 +448,7 @@ export default function App() {
             const wasEditing = Boolean(modal.data);
             closeModal();
             await loadReviews(true);
-            setToast(wasEditing ? 'Feedback updated.' : 'Feedback added.');
+            setToast(wasEditing ? 'Review updated.' : 'Review added.');
           }}
         />
       )}
