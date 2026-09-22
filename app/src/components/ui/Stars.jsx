@@ -2,29 +2,74 @@ import { calculateAverageRating } from '../../lib/format';
 
 /**
  * Star rating with half-star precision.
- * The old version rendered a nested absolutely-positioned overlay per half
- * star; this clips a filled row against an empty row instead -- same look,
- * a third of the DOM.
+ *
+ * Renders a muted SVG row and clips a filled row against it by percentage --
+ * the same trick as before, but with real vector stars instead of the Unicode
+ * glyph, which rendered differently on every platform and could not be sized
+ * consistently.
+ *
+ * Exports are unchanged (`Stars`, `RatingBadge`) because two other workstreams
+ * depend on this interface.
  */
+
+/** Sizes are in px so the clipped overlay lines up exactly with the base row. */
+const SIZES = {
+  xs: 12,
+  sm: 14,
+  md: 16,
+  lg: 24,
+};
+
+const STAR_PATH =
+  'M12 2.6l2.86 5.8 6.4.93-4.63 4.51 1.09 6.37L12 17.2l-5.72 3.01 1.09-6.37L2.74 9.33l6.4-.93z';
+
+/**
+ * Gap is computed in px rather than `em`: the two rows are clipped against each
+ * other, so their spacing must be identical and independent of inherited
+ * font-size.
+ */
+function StarRow({ size, className }) {
+  return (
+    <span
+      className={`flex shrink-0 ${className}`}
+      style={{ gap: `${Math.round(size * 0.12)}px` }}
+    >
+      {[0, 1, 2, 3, 4].map((index) => (
+        <svg
+          key={index}
+          width={size}
+          height={size}
+          viewBox="0 0 24 24"
+          fill="currentColor"
+          aria-hidden="true"
+          focusable="false"
+        >
+          <path d={STAR_PATH} />
+        </svg>
+      ))}
+    </span>
+  );
+}
+
 export default function Stars({ value, size = 'sm' }) {
   const rating = Math.max(0, Math.min(5, Number(value) || 0));
   const percent = (rating / 5) * 100;
-
-  const scale = size === 'lg' ? 'text-xl' : size === 'xs' ? 'text-[10px]' : 'text-sm';
+  const px = SIZES[size] ?? SIZES.sm;
 
   return (
     <span
-      className={`relative inline-block leading-none tracking-tight ${scale}`}
+      className="relative inline-flex align-middle leading-none"
       role="img"
       aria-label={`${rating.toFixed(1)} out of 5`}
     >
-      <span className="text-slate-600">★★★★★</span>
+      <StarRow size={px} className="text-line-strong" />
+
       <span
-        className="absolute inset-0 overflow-hidden whitespace-nowrap text-yellow-400"
+        className="absolute inset-y-0 left-0 flex overflow-hidden text-amber-400"
         style={{ width: `${percent}%` }}
         aria-hidden="true"
       >
-        ★★★★★
+        <StarRow size={px} className="" />
       </span>
     </span>
   );
@@ -37,8 +82,8 @@ export function RatingBadge({ ratings, size = 'sm' }) {
   const average = calculateAverageRating(ratings);
 
   return (
-    <div className="flex flex-col items-end gap-0.5">
-      <span className="font-mono text-xs font-bold text-yellow-400">
+    <div className="flex shrink-0 flex-col items-end gap-1">
+      <span className="font-mono text-caption font-semibold text-amber-400">
         {average.toFixed(1)} / 5
       </span>
       <Stars value={average} size={size} />

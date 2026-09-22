@@ -1,11 +1,14 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import Ambient from './components/Ambient';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import ErrorBanner from './components/ui/ErrorBanner';
 import Toast from './components/ui/Toast';
 import AboutTab from './tabs/AboutTab';
+import ServicesTab from './tabs/ServicesTab';
 import PortfolioTab from './tabs/PortfolioTab';
 import ReviewsTab from './tabs/ReviewsTab';
+import ContactTab from './tabs/ContactTab';
 import AdminTab from './tabs/AdminTab';
 import LoginModal from './modals/LoginModal';
 import InviteCodeModal from './modals/InviteCodeModal';
@@ -14,7 +17,8 @@ import ReviewFormModal from './modals/ReviewFormModal';
 import ProjectFormModal from './modals/ProjectFormModal';
 import { getSupabase, describeError } from './lib/supabase';
 import { normalizeProject, normalizeReview, normalizeCode } from './lib/normalize';
-import { TOAST_MS } from './lib/constants';
+import { DEFAULT_TAB, TOAST_MS } from './lib/constants';
+import { useScrollProgress, useTabTransition } from './lib/motion';
 
 const EMPTY_MODAL = { type: null, data: null };
 
@@ -27,8 +31,16 @@ export default function App() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [toast, setToast] = useState('');
-  const [activeTab, setActiveTab] = useState('portfolio');
+  const [activeTab, setActiveTab] = useState(DEFAULT_TAB);
   const [modal, setModal] = useState(EMPTY_MODAL);
+
+  /**
+   * Keeps the outgoing tab mounted while it animates away, then swaps in the
+   * incoming one. `renderedTab` lags `activeTab` by the exit duration.
+   */
+  const { rendered: renderedTab, phase } = useTabTransition(activeTab);
+
+  const scrollProgress = useScrollProgress();
 
   /**
    * Realtime callbacks are registered once and live outside the render cycle,
@@ -205,6 +217,14 @@ export default function App() {
     return () => clearTimeout(timer);
   }, [toast]);
 
+  /**
+   * A tab switch should start at the top. Reset as soon as the request comes in
+   * rather than after the exit animation, so the jump is never visible.
+   */
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'auto' });
+  }, [activeTab]);
+
   // --------------------------------------------------------------- actions
 
   const handleLoginSuccess = async (nextSession) => {
@@ -234,7 +254,7 @@ export default function App() {
     setIsAdmin(false);
     isAdminRef.current = false;
     setInviteCodes([]);
-    setActiveTab('portfolio');
+    setActiveTab(DEFAULT_TAB);
     setToast('Logged out.');
   };
 
@@ -286,7 +306,23 @@ export default function App() {
   // ------------------------------------------------------------------ view
 
   return (
-    <div className="relative flex min-h-screen flex-col">
+    <div className="grain relative flex min-h-screen flex-col">
+      <a
+        href="#main"
+        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[300]
+                   focus:rounded-lg focus:bg-accent focus:px-4 focus:py-2 focus:font-semibold focus:text-void"
+      >
+        Skip to content
+      </a>
+
+      <Ambient />
+
+      <div
+        aria-hidden="true"
+        className="fixed inset-x-0 top-0 z-50 h-0.5 origin-left bg-gradient-to-r from-accent-3 via-accent to-accent-2"
+        style={{ transform: `scaleX(${scrollProgress})` }}
+      />
+
       <Header
         activeTab={activeTab}
         onTabChange={setActiveTab}
@@ -294,54 +330,80 @@ export default function App() {
         onLogout={logout}
       />
 
-      <main className="relative mx-auto w-full max-w-7xl flex-grow p-6 sm:p-8">
-        <ErrorBanner message={error} onDismiss={() => setError('')} />
+      <main id="main" className="relative z-10 flex-grow pb-16 pt-8 sm:pt-12">
+        <div className="container-page">
+          <ErrorBanner message={error} onDismiss={() => setError('')} />
 
-        {loading ? (
-          <div className="py-24 text-center font-bold text-slate-500">
-            Connecting to database…
-          </div>
-        ) : (
-          <>
-            {activeTab === 'about' && <AboutTab />}
+          {loading ? (
+            <div className="flex min-h-[50vh] flex-col items-center justify-center gap-5">
+              <div className="relative h-12 w-12">
+                <div className="absolute inset-0 rounded-full border border-line-strong" />
+                <div className="absolute inset-0 animate-spin-slow rounded-full border-t-2 border-accent" />
+              </div>
+              <p className="meta">Loading portfolio...</p>
+            </div>
+          ) : (
+            <div
+              key={renderedTab}
+              id="tab-panel"
+              role="tabpanel"
+              /*
+               * Labelled by the SELECTED tab, not by the mounted one. A tabpanel
+               * belongs to the tab that is selected, and assistive tech checks
+               * `aria-labelledby` against `aria-selected` -- keeping them in
+               * lockstep matters more than the 150ms window where the outgoing
+               * content is still painted.
+               */
+              aria-labelledby={`tab-${activeTab}`}
+              tabIndex={-1}
+              className={phase === 'exit' ? 'animate-tab-out' : 'animate-tab-in'}
+            >
+              {renderedTab === 'about' && (
+                <AboutTab projects={projects} reviews={reviews} onNavigate={setActiveTab} />
+              )}
 
-            {activeTab === 'portfolio' && (
-              <PortfolioTab
-                projects={projects}
-                reviews={reviews}
-                isAdmin={isAdmin}
-                onChanged={loadProjects}
-                onError={setError}
-                onToast={setToast}
-                openProjectModal={(project) => openModal('projectForm', project)}
-              />
-            )}
+              {renderedTab === 'services' && <ServicesTab onNavigate={setActiveTab} />}
 
-            {activeTab === 'reviews' && (
-              <ReviewsTab
-                reviews={reviews}
-                isAdmin={isAdmin}
-                openCodeModal={() => openModal('inviteCode')}
-              />
-            )}
+              {renderedTab === 'portfolio' && (
+                <PortfolioTab
+                  projects={projects}
+                  reviews={reviews}
+                  isAdmin={isAdmin}
+                  onChanged={loadProjects}
+                  onError={setError}
+                  onToast={setToast}
+                  openProjectModal={(project) => openModal('projectForm', project)}
+                />
+              )}
 
-            {activeTab === 'admin' && isAdmin && (
-              <AdminTab
-                reviews={reviews}
-                inviteCodes={inviteCodes}
-                reloadReviews={() => loadReviews(true)}
-                reloadCodes={loadInviteCodes}
-                onError={setError}
-                onToast={setToast}
-                openReviewModal={(review) => openModal('reviewForm', review)}
-                openGenerateModal={() => openModal('generateCode')}
-              />
-            )}
-          </>
-        )}
+              {renderedTab === 'reviews' && (
+                <ReviewsTab
+                  reviews={reviews}
+                  isAdmin={isAdmin}
+                  openCodeModal={() => openModal('inviteCode')}
+                />
+              )}
+
+              {renderedTab === 'contact' && <ContactTab onToast={setToast} />}
+
+              {renderedTab === 'admin' && isAdmin && (
+                <AdminTab
+                  reviews={reviews}
+                  inviteCodes={inviteCodes}
+                  reloadReviews={() => loadReviews(true)}
+                  reloadCodes={loadInviteCodes}
+                  onError={setError}
+                  onToast={setToast}
+                  openReviewModal={(review) => openModal('reviewForm', review)}
+                  openGenerateModal={() => openModal('generateCode')}
+                />
+              )}
+            </div>
+          )}
+        </div>
       </main>
 
-      <Footer />
+      <Footer onNavigate={setActiveTab} />
 
       <div
         aria-hidden="true"

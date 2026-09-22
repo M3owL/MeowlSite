@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 /**
  * Renders the first URL in `candidates` that actually loads.
@@ -12,6 +12,11 @@ import { useEffect, useMemo, useState } from 'react';
  * This component uses a real <img> so failures are catchable, then walks the
  * candidate list. If everything fails it renders `fallback` instead of leaving
  * a hole.
+ *
+ * The candidate walk is host-major (see lib/steam.js) and can make up to 15
+ * requests before it settles, which is exactly why `onLoadingChange` exists:
+ * the caller gets to paint a skeleton for the whole walk instead of showing an
+ * empty frame.
  */
 export default function SteamImage({
   candidates = [],
@@ -19,8 +24,11 @@ export default function SteamImage({
   alt = '',
   className = '',
   style,
+  sizes,
+  aspect,
   eager = false,
   onResolved,
+  onLoadingChange,
 }) {
   const urls = useMemo(
     () => candidates.filter((url) => typeof url === 'string' && url.length > 0),
@@ -31,28 +39,53 @@ export default function SteamImage({
   const primary = urls[0] ?? null;
   const [index, setIndex] = useState(0);
   const [failed, setFailed] = useState(false);
+  const [loaded, setLoaded] = useState(false);
 
   // A new candidate list (different project, newly picked app id) starts over.
   useEffect(() => {
     setIndex(0);
     setFailed(false);
+    setLoaded(false);
   }, [primary]);
+
+  const loading = urls.length > 0 && !failed && !loaded;
+
+  /**
+   * Held in a ref so an inline arrow from the parent does not re-fire the
+   * reporting effect on every render.
+   */
+  const notify = useRef(onLoadingChange);
+  useEffect(() => {
+    notify.current = onLoadingChange;
+  });
+
+  useEffect(() => {
+    notify.current?.(loading);
+  }, [loading]);
 
   if (!urls.length || failed) return fallback;
 
   const src = urls[Math.min(index, urls.length - 1)];
+
+  // `aspect` reserves the box before the bytes arrive; an explicit `style`
+  // still wins so object-position offsets keep working.
+  const composed = aspect ? { aspectRatio: aspect, ...style } : style;
 
   return (
     <img
       src={src}
       alt={alt}
       className={className}
-      style={style}
+      style={composed}
+      sizes={sizes}
       loading={eager ? 'eager' : 'lazy'}
       decoding="async"
       referrerPolicy="no-referrer"
       draggable={false}
-      onLoad={() => onResolved?.(src)}
+      onLoad={() => {
+        setLoaded(true);
+        onResolved?.(src);
+      }}
       onError={() => {
         if (index + 1 < urls.length) {
           setIndex((current) => current + 1);
