@@ -40,23 +40,18 @@ export const DEFAULT_TAB = 'about';
 // ------------------------------------------------------------------ about
 
 export const ABOUT = {
-  heading: 'Games, translated so they still sound like games.',
+  heading: 'I translate games into Polish.',
   intro:
-    'I am a Polish game translator. I take English game text and make it read like it was written in Polish from the start — not like a translation.',
+    'English to Polish localization for in-game text, UI, subtitles and store pages. Nothing should read like a translation.',
+  focus: 'Indie & mid-size games',
   body: [
-    'Most bad game localization is not wrong. It is just stiff: sentences that are technically accurate but nobody would ever say out loud. My job is to catch those before your players do.',
-    'I work on UI strings, in-game dialogue, subtitles and store copy. I keep glossaries so your terminology stays consistent across patches and DLC, and I flag the places where the English source will not survive a literal translation.',
-    'I am early in my career, so I would rather show you the work than the years. Take a look at the portfolio and the sample translations — that is the honest pitch.',
+    'I am a Polish game translator working from English into Polish. I started taking on projects in 2026 and I work with indie and mid-size studios.',
+    'My work covers UI strings, in-game dialogue, subtitles and store copy. I keep a glossary for every project so terminology stays consistent across patches and DLC, and I flag anything in the English source that will not survive a literal translation.',
+    'Send me the files, the word count and the deadline, and you get a fixed price and a delivery date back. The portfolio shows what the work looks like in practice.',
   ],
   languagePairs: [
     { from: 'English', to: 'Polish', primary: true },
     { from: 'Polish', to: 'English', primary: false },
-  ],
-  // PLACEHOLDER -- confirm each line before publishing.
-  facts: [
-    { label: 'Languages', value: 'EN → PL' },
-    { label: 'Focus', value: 'Indie & mid-size games' },
-    { label: 'Based in', value: 'Poland (CET)' },
   ],
 };
 

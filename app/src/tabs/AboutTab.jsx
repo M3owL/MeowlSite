@@ -4,21 +4,21 @@ import { useCountUp, useInView } from '../lib/motion';
 
 /**
  * Landing page. `DEFAULT_TAB` is 'about', so this is the first thing a visitor
- * sees: hero, numbers, language pairs, bio, toolkit, facts, closing CTA.
+ * sees: hero, numbers, bio, toolkit, closing CTA.
+ *
+ * Deliberately plain. An earlier pass dressed every block in its own bordered
+ * panel and split the bio across three mismatched boxes, which read as
+ * decoration rather than information. The bio is prose now, in one column.
  *
  * All editorial copy comes from `lib/constants.js`. The few structural labels
- * this component needs (section headings, CTA button text) are declared in
- * `COPY` below and are candidates for moving into constants.
+ * this component needs are declared in `COPY` below.
  */
 const COPY = {
   getQuote: 'Get a quote',
   seeWork: 'See the work',
   statsEyebrow: 'At a glance',
-  pairsHeading: 'Language pairs',
   bioHeading: 'About me',
   toolkitHeading: 'Toolkit',
-  factsHeading: 'Quick facts',
-  primaryBadge: 'Primary',
   groups: [
     { id: 'tools', label: 'CAT tools', items: TOOLS },
     { id: 'formats', label: 'File formats', items: FORMATS },
@@ -91,20 +91,19 @@ export default function AboutTab({ projects = [], onNavigate }) {
     value: stat.live === 'projects' ? projects.length : stat.value,
   })).filter((stat) => Number(stat.value) > 0);
 
-  const [lead, ...rest] = ABOUT.body;
-
   return (
-    <div className="mx-auto max-w-5xl space-y-16 sm:space-y-24">
+    <div className="mx-auto max-w-5xl space-y-12 sm:space-y-16">
       {/* ------------------------------------------------------------- hero */}
       <section className="relative">
         <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
           <div className="absolute left-1/2 top-[-6rem] h-72 w-[42rem] -translate-x-1/2 rounded-full bg-accent/20 blur-3xl" />
-          <div className="absolute right-[-4rem] top-24 h-56 w-56 rounded-full bg-iris/20 blur-3xl" />
         </div>
 
         <div className="relative">
           <Reveal index={0} className="flex flex-wrap items-center gap-x-3 gap-y-2">
             <span className="eyebrow">{BRAND.role}</span>
+            <span aria-hidden="true" className="hidden h-3 w-px bg-line-strong sm:block" />
+            <span className="meta">{ABOUT.focus}</span>
             <span aria-hidden="true" className="hidden h-3 w-px bg-line-strong sm:block" />
             <span className="meta">{BRAND.location}</span>
           </Reveal>
@@ -117,13 +116,32 @@ export default function AboutTab({ projects = [], onNavigate }) {
             {ABOUT.intro}
           </Reveal>
 
-          <Reveal index={3} className="mt-7 flex flex-wrap items-center gap-x-3 gap-y-2">
+          <Reveal index={3} className="mt-6 flex flex-wrap items-center gap-x-3 gap-y-2">
+            {ABOUT.languagePairs.map((pair, index) => (
+              <span key={`${pair.from}-${pair.to}`} className="flex items-center gap-3">
+                {index > 0 ? (
+                  <span aria-hidden="true" className="text-faint">
+                    ·
+                  </span>
+                ) : null}
+                <span
+                  className={`text-body ${
+                    pair.primary ? 'font-semibold text-ink' : 'text-muted'
+                  }`}
+                >
+                  {pair.from} → {pair.to}
+                </span>
+              </span>
+            ))}
+          </Reveal>
+
+          <Reveal index={4} className="mt-6 flex flex-wrap items-center gap-x-3 gap-y-2">
             <AvailabilityDot open={BRAND.availability.open} />
             <span className="text-caption font-semibold text-ink">{BRAND.availability.label}</span>
             <span className="meta">{BRAND.availability.note}</span>
           </Reveal>
 
-          <Reveal index={4} className="mt-9 flex flex-col gap-3 sm:flex-row sm:items-center">
+          <Reveal index={5} className="mt-9 flex flex-col gap-3 sm:flex-row sm:items-center">
             <button
               type="button"
               className="btn-primary btn-lg"
@@ -150,7 +168,7 @@ export default function AboutTab({ projects = [], onNavigate }) {
             {COPY.statsEyebrow}
           </Reveal>
 
-          {/* Single column below `xs`: "120,000" cannot wrap, so two narrow
+          {/* Single column below `xs`: "50,000" cannot wrap, so two narrow
               tiles at 320px would push the number past the card edge. */}
           <div className="mt-6 grid gap-4 xs:grid-cols-2 lg:grid-cols-4">
             {stats.map((stat, index) => (
@@ -167,60 +185,19 @@ export default function AboutTab({ projects = [], onNavigate }) {
         </section>
       ) : null}
 
-      {/* ---------------------------------------------------- language pairs */}
-      <section aria-labelledby="about-pairs">
-        <Reveal as="h2" id="about-pairs" className="text-h2">
-          {COPY.pairsHeading}
-        </Reveal>
-
-        <div className="mt-6 grid gap-4 sm:grid-cols-2">
-          {ABOUT.languagePairs.map((pair, index) => (
-            <Reveal
-              key={`${pair.from}-${pair.to}`}
-              index={index}
-              className={`flex items-center justify-between gap-4 rounded-xl border p-5 ${
-                pair.primary
-                  ? 'border-accent/30 bg-accent/[0.07]'
-                  : 'border-line bg-surface-2/40'
-              }`}
-            >
-              <span className="flex flex-wrap items-center gap-x-3 gap-y-1">
-                <span className="font-display text-h4 font-semibold text-ink">{pair.from}</span>
-                <ArrowRight className="h-5 w-5 text-accent" />
-                <span className="font-display text-h4 font-semibold text-ink">{pair.to}</span>
-              </span>
-
-              {pair.primary ? <span className="chip-accent shrink-0">{COPY.primaryBadge}</span> : null}
-            </Reveal>
-          ))}
-        </div>
-      </section>
-
       {/* -------------------------------------------------------------- bio */}
       <section aria-labelledby="about-bio">
         <Reveal as="h2" id="about-bio" className="text-h2">
           {COPY.bioHeading}
         </Reveal>
 
-        {lead ? (
-          <Reveal className="mt-6 rounded-xl border-l-2 border-accent/60 bg-surface-2/40 p-6 sm:p-7">
-            <p className="text-body-lg text-ink">{lead}</p>
-          </Reveal>
-        ) : null}
-
-        {rest.length > 0 ? (
-          <div className="mt-4 grid gap-4 sm:grid-cols-2">
-            {rest.map((paragraph, index) => (
-              <Reveal
-                key={paragraph}
-                index={index}
-                className="rounded-xl border border-line bg-surface-2/25 p-6"
-              >
-                <p className="text-body text-muted">{paragraph}</p>
-              </Reveal>
-            ))}
-          </div>
-        ) : null}
+        <div className="mt-6 max-w-2xl space-y-5">
+          {ABOUT.body.map((paragraph, index) => (
+            <Reveal as="p" key={paragraph} index={index} className="text-body-lg text-muted">
+              {paragraph}
+            </Reveal>
+          ))}
+        </div>
       </section>
 
       {/* ---------------------------------------------------------- toolkit */}
@@ -243,22 +220,6 @@ export default function AboutTab({ projects = [], onNavigate }) {
             </Reveal>
           ))}
         </div>
-      </section>
-
-      {/* ------------------------------------------------------------ facts */}
-      <section aria-labelledby="about-facts">
-        <Reveal as="h2" id="about-facts" className="text-h2">
-          {COPY.factsHeading}
-        </Reveal>
-
-        <dl className="mt-6 grid gap-4 rounded-2xl border border-line bg-surface-2/40 p-6 sm:grid-cols-3 sm:p-7">
-          {ABOUT.facts.map((fact, index) => (
-            <Reveal key={fact.label} index={index}>
-              <dt className="meta">{fact.label}</dt>
-              <dd className="mt-1.5 font-display text-h4 font-semibold text-ink">{fact.value}</dd>
-            </Reveal>
-          ))}
-        </dl>
       </section>
 
       {/* -------------------------------------------------------- closing cta */}
