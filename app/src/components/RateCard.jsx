@@ -162,7 +162,7 @@ export default function RateCard({ onNavigate }) {
       <div className="grid gap-3 px-6 pb-6 sm:grid-cols-2 sm:px-8 sm:pb-8">
         <div className="flex gap-3 rounded-lg border border-line bg-surface-2/40 p-4">
           <ClockIcon className="mt-0.5 text-accent" />
-          <p className="text-caption text-muted">{RATE_NOTES.rush}</p>
+          <p className="text-caption text-muted">{RATE_NOTES.turnaround}</p>
         </div>
 
         <div className="flex gap-3 rounded-lg border border-line bg-surface-2/40 p-4">

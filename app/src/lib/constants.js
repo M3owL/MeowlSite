@@ -40,75 +40,54 @@ export const DEFAULT_TAB = 'about';
 // ------------------------------------------------------------------ about
 
 export const ABOUT = {
-  heading: 'I translate games into Polish.',
+  heading: 'I localize games into Polish.',
   intro:
-    'English to Polish localization for in-game text, UI, subtitles and store pages. Nothing should read like a translation.',
+    'English to Polish game localization and proofreading. Nothing should read like a translation.',
   focus: 'Indie & mid-size games',
   body: [
     'I am a Polish game translator working from English into Polish. I started taking on projects in 2026 and I work with indie and mid-size studios.',
-    'My work covers UI strings, in-game dialogue, subtitles and store copy. I keep a glossary for every project so terminology stays consistent across patches and DLC, and I flag anything in the English source that will not survive a literal translation.',
+    'My work covers in-game text, UI strings, dialogue and subtitles, plus proofreading of Polish text that already exists. I keep a glossary for every project so terminology stays consistent across patches and DLC, and I flag anything in the English source that will not survive a literal translation.',
     'Send me the files, the word count and the deadline, and you get a fixed price and a delivery date back. The portfolio shows what the work looks like in practice.',
   ],
-  languagePairs: [
-    { from: 'English', to: 'Polish', primary: true },
-    { from: 'Polish', to: 'English', primary: false },
-  ],
+  /**
+   * English into Polish only. Polish into English was on this list and was
+   * never confirmed by the owner -- it is also a much stronger claim, since
+   * translating into a non-native language is what agencies screen for first.
+   */
+  languagePairs: [{ from: 'English', to: 'Polish', primary: true }],
 };
 
 /** `live: 'projects'` is filled in from the database at runtime. */
 export const STATS = [
   { id: 'projects', label: 'Projects delivered', value: 0, suffix: '+', live: 'projects' },
-  // PLACEHOLDER -- replace with real numbers or remove the tile.
+  // PLACEHOLDER -- replace with a real number or remove the tile.
   { id: 'words', label: 'Words translated', value: 50000, suffix: '+', live: null },
-  { id: 'pairs', label: 'Language pairs', value: 2, suffix: '', live: null },
   // Started in 2026. Keep this honest and specific -- do not inflate it.
   { id: 'experience', label: 'Experience', value: 6, suffix: ' months+', live: null },
 ];
 
 // --------------------------------------------------------------- services
 
+/**
+ * Two services, because those are the two the owner actually offers. An
+ * earlier version listed six -- LQA, voice-over scripts, store copy, glossary
+ * setup -- which were plausible for a localizer but not things he does, and
+ * every extra one is a claim to defend in the first client call.
+ */
 export const SERVICES = [
   {
-    id: 'ingame',
-    title: 'In-game text & UI',
-    summary: 'Menus, tooltips, item descriptions, quest logs, dialogue.',
+    id: 'localization',
+    title: 'Game localization',
+    summary: 'English to Polish, for everything the player reads.',
     detail:
-      'Length matters more than you think. I keep UI strings inside their button, flag the ones that will overflow, and leave variables and markup untouched.',
+      'In-game text, UI strings, dialogue, item descriptions, quest logs and subtitles. Written so a Polish player reads it as Polish rather than as a translation, with variables and markup left untouched.',
   },
   {
-    id: 'subtitles',
-    title: 'Subtitles',
-    summary: 'Timed subtitles that stay readable at speed.',
+    id: 'proofreading',
+    title: 'Proofreading',
+    summary: 'A second pass over Polish text that already exists.',
     detail:
-      'Split for reading speed, not for grammar. I respect character-per-line limits and keep line breaks where they belong.',
-  },
-  {
-    id: 'store',
-    title: 'Store page & marketing copy',
-    summary: 'Steam pages, descriptions, tags, patch notes.',
-    detail:
-      'This is the copy that sells the game. It gets written for a Polish reader, not translated word for word from the English pitch.',
-  },
-  {
-    id: 'lqa',
-    title: 'LQA / linguistic testing',
-    summary: 'Playing the build and reporting what is actually broken.',
-    detail:
-      'Overflow, truncation, wrong context, text that contradicts what is on screen. Delivered as a structured bug report you can act on.',
-  },
-  {
-    id: 'vo',
-    title: 'Voice-over scripts',
-    summary: 'Scripts that fit the mouth of the actor.',
-    detail:
-      'Adjusted for syllable count and breath so the line lands in the same time window as the original.',
-  },
-  {
-    id: 'glossary',
-    title: 'Glossary & TM setup',
-    summary: 'Terminology that survives patches, DLC and sequels.',
-    detail:
-      'A shared glossary and translation memory so the second project costs you less than the first.',
+      'Checking a translation for accuracy, consistency and natural phrasing — whether it came from another translator, from a machine, or from an earlier patch. You get the corrected text back, plus a note on anything that needed a judgement call.',
   },
 ];
 
@@ -148,22 +127,17 @@ export const PROCESS = [
 // ------------------------------------------------------------ rates
 
 /**
- * Only the per-word rate is confirmed. Everything else is quoted per project,
- * because inventing a figure the owner has not agreed to is worse than saying
- * "on request".
+ * Only the localization rate is confirmed. Proofreading has no agreed figure,
+ * so it says "On request" rather than carrying a number the owner never set.
  */
 export const RATES = [
-  { service: 'Translation, English to Polish', unit: 'per word', from: '$0.015' },
-  { service: 'Store page & marketing copy', unit: 'per word', from: '$0.015' },
-  { service: 'Subtitles', unit: 'per video minute', from: 'On request' },
-  { service: 'LQA / linguistic testing', unit: 'per hour', from: 'On request' },
-  { service: 'Voice-over scripts', unit: 'per line', from: 'On request' },
-  { service: 'Glossary & TM setup', unit: 'per project', from: 'On request' },
+  { service: 'Localization, English to Polish', unit: 'per word', from: '$0.015' },
+  { service: 'Proofreading', unit: 'per word', from: 'On request' },
 ];
 
 export const RATE_NOTES = {
   model: [
-    'Per word for translation — the number you get is the number you pay.',
+    'Per word for localization — the number you get is the number you pay.',
     'Fixed price per project for anything that is not straight text.',
   ],
   payment:
@@ -171,9 +145,14 @@ export const RATE_NOTES = {
   drivers: [
     'Volume — larger batches cost less per word.',
     'Source quality — clean strings are faster than a spreadsheet of fragments.',
-    'Deadline — anything under 72 hours carries a rush fee.',
   ],
-  rush: 'Rush delivery (under 72 hours): +30%.',
+  /**
+   * There is no rush tier on purpose. The owner already turns work around
+   * inside a day, so a surcharge for speed would be selling a problem the
+   * client does not have -- and the old "under 72 hours: +30%" line contradicted
+   * it outright.
+   */
+  turnaround: 'Delivery within one day on most projects, so there is no rush tier.',
   revisions:
     'Two rounds of revisions included within 14 days. If I got something wrong, I fix it free — no argument.',
 };
@@ -199,13 +178,6 @@ export const SAMPLES = [
     source: "You're not from around here, are you? Don't answer that.",
     target: 'Nie jesteś stąd, prawda? Nie, nie odpowiadaj.',
     note: 'The English beats around the bush with a question and then retracts it. Polish handles that beat with a flat "prawda?" and a repeated "nie" — the hesitation survives, and it still fits in the subtitle line.',
-  },
-  {
-    id: 'store',
-    label: 'Store copy',
-    source: 'Build, survive, and carve out a life in the ruins of the old world.',
-    target: 'Buduj, przetrwaj i wyrąb sobie miejsce w ruinach starego świata.',
-    note: 'Store copy has to sell, not inform. "Carve out a life" is the verb doing the work, so it had to become a Polish verb with the same physical weight — "wyrąb" — rather than the flat "znajdź sobie życie".',
   },
 ];
 

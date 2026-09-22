@@ -421,7 +421,7 @@ expect(
 expect(
   'services tab covers services, process and rates',
   render('ServicesTab', <ServicesTab onNavigate={noop} />),
-  'Subtitles',
+  'Proofreading',
   'Brief',
   'Request a quote',
 );

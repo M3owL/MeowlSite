@@ -162,9 +162,9 @@ export default function AboutTab({ projects = [], onNavigate }) {
             {COPY.statsEyebrow}
           </Reveal>
 
-          {/* Single column below `xs`: "50,000" cannot wrap, so two narrow
-              tiles at 320px would push the number past the card edge. */}
-          <div className="mt-6 grid gap-4 xs:grid-cols-2 lg:grid-cols-4">
+          {/* Three tiles, so the row is three wide at `lg` rather than leaving a
+              gap where the language-pairs tile used to sit. */}
+          <div className="mt-6 grid gap-4 xs:grid-cols-2 lg:grid-cols-3">
             {stats.map((stat, index) => (
               <Reveal
                 key={stat.id}

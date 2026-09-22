@@ -19,13 +19,15 @@ const COPY = {
   samplesEyebrow: 'Samples',
   samplesHeading: 'See it before you buy it',
   samplesIntro:
-    'Three lines, the same way I would hand them to you: the English, the Polish, and why the Polish reads the way it does.',
+    'The same way I would hand them to you: the English, the Polish, and why the Polish reads the way it does.',
 };
 
 /* ------------------------------------------------------------------ icons */
 
-function ServiceIcon({ id, className = 'h-6 w-6' }) {
+function ServiceIcon({ id, className = '', size = 24 }) {
   const shared = {
+    width: size,
+    height: size,
     viewBox: '0 0 24 24',
     fill: 'none',
     stroke: 'currentColor',
@@ -38,45 +40,20 @@ function ServiceIcon({ id, className = 'h-6 w-6' }) {
   };
 
   switch (id) {
-    case 'ingame':
+    case 'localization':
       return (
         <svg {...shared}>
-          <rect x="3" y="4" width="18" height="16" rx="2" />
-          <path d="M3 9h18" />
-          <path d="M7 13h6" />
-          <path d="M7 16.5h9" />
+          <path d="M12 6.5C10.5 5 8.5 4.5 6 4.5H4v13h2c2.5 0 4.5.5 6 2 1.5-1.5 3.5-2 6-2h2v-13h-2c-2.5 0-4.5.5-6 2Z" />
+          <path d="M12 6.5v13" />
         </svg>
       );
-    case 'subtitles':
+    case 'proofreading':
       return (
         <svg {...shared}>
-          <rect x="3" y="5" width="18" height="14" rx="2" />
-          <path d="M7 11.5h4" />
-          <path d="M13.5 11.5H17" />
-          <path d="M7 15.5h7" />
-        </svg>
-      );
-    case 'store':
-      return (
-        <svg {...shared}>
-          <path d="M5.5 8h13l-1.2 11.5H6.7L5.5 8Z" />
-          <path d="M9 8V6.5a3 3 0 0 1 6 0V8" />
-        </svg>
-      );
-    case 'lqa':
-      return (
-        <svg {...shared}>
-          <circle cx="10.5" cy="10.5" r="6.5" />
-          <path d="m15.5 15.5 4.5 4.5" />
-          <path d="m7.8 10.6 1.9 1.9 3.4-3.7" />
-        </svg>
-      );
-    case 'vo':
-      return (
-        <svg {...shared}>
-          <rect x="9" y="3" width="6" height="11" rx="3" />
-          <path d="M5.5 11.5a6.5 6.5 0 0 0 13 0" />
-          <path d="M12 18v3" />
+          <path d="M4 6h11" />
+          <path d="M4 11h8" />
+          <path d="M4 16h5" />
+          <path d="m14 17 2.5 2.5L21 15" />
         </svg>
       );
     default:
