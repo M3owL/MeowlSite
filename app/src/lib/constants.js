@@ -143,7 +143,6 @@ export const RATE_NOTES = {
   payment:
     'Payment by PayPal or bank transfer. If you need something else, ask — I am happy to work it out.',
   drivers: [
-    'Volume — larger batches cost less per word.',
     'Source quality — clean strings are faster than a spreadsheet of fragments.',
   ],
   /**
