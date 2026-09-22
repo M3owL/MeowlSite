@@ -64,7 +64,7 @@ export const ABOUT = {
 export const STATS = [
   { id: 'projects', label: 'Projects delivered', value: 0, suffix: '+', live: 'projects' },
   // PLACEHOLDER -- replace with real numbers or remove the tile.
-  { id: 'words', label: 'Words translated', value: 120000, suffix: '+', live: null },
+  { id: 'words', label: 'Words translated', value: 50000, suffix: '+', live: null },
   { id: 'pairs', label: 'Language pairs', value: 2, suffix: '', live: null },
   { id: 'years', label: 'Years active', value: 2, suffix: '+', live: null },
 ];

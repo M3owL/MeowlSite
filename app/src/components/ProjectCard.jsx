@@ -8,8 +8,9 @@ import { parseSteamAppId, bannerCandidatesFor, logoCandidatesFor } from '../lib/
  *
  * Two variants, both driven by the same data:
  *
- *   featured  a pinned project -- full grid width, cinematic 21:9 art, h2 title
- *   standard  everything else -- one grid cell, 16:9 art, h3 title
+ *   featured  a pinned project -- full grid width, art beside the copy from
+ *             `sm:` up, h2 title
+ *   standard  everything else -- one grid cell, stacked 16:9 art, h3 title
  *
  * The art frame has a *fixed* aspect ratio on purpose. Steam's fallback chain
  * can land on library_hero.jpg (~3.10:1), header.jpg (~2.14:1) or
@@ -188,20 +189,30 @@ export default function ProjectCard({
   );
 
   const artSizes = isFeatured
-    ? '100vw'
+    ? '(min-width: 640px) 55vw, 100vw'
     : '(min-width: 1280px) 33vw, (min-width: 768px) 50vw, 100vw';
 
   return (
     <article
       className={`group lift card-interactive relative flex w-full flex-col overflow-hidden ${
-        isFeatured ? 'border-accent/40 shadow-glow-sm' : ''
+        isFeatured
+          ? 'border-accent/40 shadow-glow-sm sm:min-h-[300px] sm:flex-row sm:flex-wrap'
+          : ''
       }`}
     >
-      {/* ---- fixed-ratio artwork frame ---- */}
+      {/*
+       * Featured cards set the art and the copy side by side from `sm:` up.
+       * Stacked, a full-width 21:9 frame plus its copy measured ~765px tall at
+       * 1440px -- taller than the viewport, which made the tab read as though it
+       * held a single project. `flex-wrap` keeps `PinnedReviews` (which is
+       * `w-full`) on its own row underneath without needing another wrapper.
+       */}
       <div
         ref={artRef}
-        className={`relative w-full overflow-hidden bg-surface-2 ${
-          isFeatured ? 'aspect-[16/9] sm:aspect-[21/9]' : 'aspect-[16/9]'
+        className={`relative overflow-hidden bg-surface-2 ${
+          isFeatured
+            ? 'aspect-[16/9] w-full sm:aspect-auto sm:w-[55%] sm:shrink-0'
+            : 'aspect-[16/9] w-full'
         }`}
       >
         {artLoading && <div className="skeleton absolute inset-0 rounded-none" aria-hidden="true" />}
@@ -248,7 +259,11 @@ export default function ProjectCard({
       </div>
 
       {/* ---- content ---- */}
-      <div className={`flex flex-1 flex-col gap-3 ${isFeatured ? 'p-6 sm:p-8' : 'p-5'}`}>
+      <div
+        className={`flex min-w-0 flex-1 flex-col gap-3 ${
+          isFeatured ? 'justify-center p-6 sm:p-7' : 'p-5'
+        }`}
+      >
         <h3 className={`font-display font-semibold text-ink ${isFeatured ? 'text-h2' : 'text-h3'}`}>
           {project.title}
         </h3>
@@ -290,7 +305,16 @@ export default function ProjectCard({
         )}
 
         {isAdmin && (
-          <div className="mt-auto flex flex-wrap items-center gap-2 border-t border-line pt-4">
+          <div
+            /*
+             * `mt-auto` is what pins the admin row to the bottom of a
+             * content-sized card. The featured variant centres its whole column
+             * beside the art instead, so the auto margin would fight that.
+             */
+            className={`flex flex-wrap items-center gap-2 border-t border-line pt-4 ${
+              isFeatured ? '' : 'mt-auto'
+            }`}
+          >
             <button
               type="button"
               disabled={busy}
