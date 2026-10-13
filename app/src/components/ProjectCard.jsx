@@ -2,23 +2,15 @@ import { useEffect, useRef, useState } from 'react';
 import SteamImage from './SteamImage';
 import PinnedReviews from './PinnedReviews';
 import { parseSteamAppId, bannerCandidatesFor, logoCandidatesFor } from '../lib/steam';
-import { WORK_AREAS } from '../lib/projectReport';
 
 /**
  * Project card.
  *
- * One shape for every project. An earlier pass gave the pinned project a
- * full-width featured variant with the art beside the copy; at 1440px that
- * card ran to ~765px, taller than the viewport, so the Portfolio tab looked
- * like it held a single project. Pinning still sorts a project to the top and
- * still marks it -- with an accent border and a badge -- but it no longer
- * changes the card's size.
+ * Wide, compact desktop rows give the artwork and project description room.
+ * Pinned projects remain first and keep their badge and accent border.
+ * Work-scope selections inform the report without appearing as public tags.
  *
- * The art frame has a *fixed* 16:9 aspect ratio on purpose. Steam's fallback
- * chain can land on library_hero.jpg (~3.10:1), header.jpg (~2.14:1) or
- * capsule_616x353.jpg (~1.75:1), and with an arbitrary frame the winner
- * silently changed the crop. A fixed frame means the crop is a decision, not an
- * accident.
+ * The art frame stays 16:9 on narrow screens and fills its row on desktop.
  *
  * The old card painted the art as a CSS background at `opacity-20`, underneath
  * a `.glass` panel that was itself 75% opaque, and then laid a near-opaque
@@ -103,10 +95,6 @@ export default function ProjectCard({
 
   const banners = bannerCandidatesFor({ customUrl: project.bg_url, appId });
   const logos = logoCandidatesFor({ customUrl: project.logo_url, appId });
-  const workLabels = WORK_AREAS.filter((area) => project.workScope?.includes(area.id)).map(
-    (area) => area.label,
-  );
-
   const pinnedReviews = project.pinnedReviews
     .map((id) => reviews.find((review) => review.id === id))
     .filter(Boolean);
@@ -191,155 +179,150 @@ export default function ProjectCard({
 
   return (
     <article
-      className={`group lift card-interactive relative flex w-full flex-col overflow-hidden ${
+      className={`group card-interactive relative w-full overflow-hidden ${
         project.pinned ? 'border-accent/40' : ''
       }`}
     >
-      {/* ---- fixed-ratio artwork frame ---- */}
-      <div
-        ref={artRef}
-        className="relative aspect-[16/9] w-full overflow-hidden bg-surface-2"
-      >
-        {artLoading && <div className="skeleton absolute inset-0 rounded-none" aria-hidden="true" />}
-
-        <SteamImage
-          candidates={banners}
-          fallback={artFallback}
-          alt=""
-          sizes="(min-width: 1280px) 33vw, (min-width: 768px) 50vw, 100vw"
-          onLoadingChange={setArtLoading}
-          className="h-full w-full object-cover transition-transform duration-700 ease-expo group-hover:scale-[1.06]"
-          style={{
-            objectPosition: `calc(50% + ${project.bg_offset_x}px) calc(50% + ${project.bg_offset_y}px)`,
-          }}
-        />
-
+      <div className="flex flex-col lg:flex-row">
+        {/* ---- fixed-ratio artwork frame ---- */}
         <div
-          className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/65 via-black/10 to-transparent"
-          aria-hidden="true"
-        />
+          ref={artRef}
+          className="relative aspect-[16/9] w-full overflow-hidden bg-surface-2 lg:aspect-auto lg:min-h-[290px] lg:w-[45%] lg:shrink-0"
+        >
+          {artLoading && <div className="skeleton absolute inset-0 rounded-none" aria-hidden="true" />}
 
-        {project.pinned && (
-          <span className="chip-accent absolute right-3 top-3 z-10 bg-void/70 font-semibold">
-            Pinned
-          </span>
-        )}
+          <SteamImage
+            candidates={banners}
+            fallback={artFallback}
+            alt=""
+            sizes="(min-width: 1280px) 520px, (min-width: 1024px) 45vw, 100vw"
+            onLoadingChange={setArtLoading}
+            className="h-full w-full object-cover transition-transform duration-700 ease-expo group-hover:scale-[1.06]"
+            style={{
+              objectPosition: `calc(50% + ${project.bg_offset_x}px) calc(50% + ${project.bg_offset_y}px)`,
+            }}
+          />
 
-        {logos.length > 0 && (
-          <span
-            ref={logoRef}
-            className="absolute bottom-4 left-4 z-10 block max-w-[55%]"
-            style={{ transform: `translate(${logoX}px, ${logoY}px)` }}
-          >
-            <SteamImage
-              candidates={logos}
-              fallback={null}
-              alt={`${project.title} logo`}
-              className="max-h-10 w-auto max-w-full object-contain drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)] sm:max-h-12"
-            />
-          </span>
-        )}
-      </div>
+          <div
+            className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/65 via-black/10 to-transparent"
+            aria-hidden="true"
+          />
 
-      {/* ---- content ---- */}
-      <div className="flex min-w-0 flex-1 flex-col gap-3 p-5">
-        <h3 className="font-display text-h3 font-semibold text-ink">{project.title}</h3>
+          {project.pinned && (
+            <span className="chip-accent absolute right-3 top-3 z-10 bg-void/70 font-semibold">
+              Pinned
+            </span>
+          )}
 
-        {project.steamLink && (
-          <a
-            href={project.steamLink}
-            target="_blank"
-            rel="noreferrer noopener"
-            className="inline-flex w-fit items-center gap-1.5 text-caption font-semibold text-accent transition-colors duration-250 ease-expo hover:text-accent-2"
-          >
-            Steam Page
-            <ExternalLinkIcon />
-          </a>
-        )}
-
-        {workLabels.length > 0 && (
-          <p className="text-caption font-medium text-faint">
-            {workLabels.slice(0, 3).join(' · ')}
-            {workLabels.length > 3 ? ` · +${workLabels.length - 3}` : ''}
-          </p>
-        )}
-
-        {project.details && (
-          <div className="min-w-0">
-            <p
-              ref={detailsRef}
-              className={`whitespace-pre-wrap text-body text-muted ${
-                expanded ? '' : 'line-clamp-3'
-              }`}
+          {logos.length > 0 && (
+            <span
+              ref={logoRef}
+              className="absolute bottom-4 left-4 z-10 block max-w-[55%]"
+              style={{ transform: `translate(${logoX}px, ${logoY}px)` }}
             >
-              {project.details}
-            </p>
+              <SteamImage
+                candidates={logos}
+                fallback={null}
+                alt={`${project.title} logo`}
+                className="max-h-10 w-auto max-w-full object-contain drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)] sm:max-h-12"
+              />
+            </span>
+          )}
+        </div>
 
-            {detailsOverflowing && (
+        {/* ---- content ---- */}
+        <div className="flex min-w-0 flex-1 flex-col gap-3 p-5 lg:gap-4 lg:p-7">
+          <h3 className="font-display text-h2 font-semibold text-ink">{project.title}</h3>
+
+          {project.steamLink && (
+            <a
+              href={project.steamLink}
+              target="_blank"
+              rel="noreferrer noopener"
+              className="inline-flex w-fit items-center gap-1.5 text-caption font-semibold text-accent transition-colors duration-250 ease-expo hover:text-accent-2"
+            >
+              Steam Page
+              <ExternalLinkIcon />
+            </a>
+          )}
+
+          {project.details && (
+            <div className="min-w-0">
+              <p
+                ref={detailsRef}
+                className={`whitespace-pre-wrap text-body text-muted ${
+                  expanded ? '' : 'line-clamp-4 lg:line-clamp-none'
+                }`}
+              >
+                {project.details}
+              </p>
+
+              {detailsOverflowing && (
+                <button
+                  type="button"
+                  onClick={() => setExpanded((current) => !current)}
+                  aria-expanded={expanded}
+                  className="btn-quiet -ml-3 mt-1"
+                >
+                  {expanded ? 'Show less' : 'Read more'}
+                </button>
+              )}
+            </div>
+          )}
+
+          {isAdmin && (
+            <div className="mt-auto flex flex-wrap items-center gap-2 border-t border-line pt-4">
               <button
                 type="button"
-                onClick={() => setExpanded((current) => !current)}
-                aria-expanded={expanded}
-                className="btn-quiet -ml-3 mt-1"
+                disabled={busy}
+                onClick={() => onTogglePin(project)}
+                className={project.pinned ? 'btn-primary btn-sm' : 'btn-ghost btn-sm'}
               >
-                {expanded ? 'Show less' : 'Read more'}
+                {project.pinned ? 'Unpin' : 'Pin'}
               </button>
-            )}
-          </div>
-        )}
 
-        {isAdmin && (
-          <div className="mt-auto flex flex-wrap items-center gap-2 border-t border-line pt-4">
-            <button
-              type="button"
-              disabled={busy}
-              onClick={() => onTogglePin(project)}
-              className={project.pinned ? 'btn-primary btn-sm' : 'btn-ghost btn-sm'}
-            >
-              {project.pinned ? 'Unpin' : 'Pin'}
-            </button>
+              <button
+                type="button"
+                disabled={busy || index === 0}
+                onClick={() => onMove(index, -1)}
+                title="Move earlier"
+                aria-label="Move project earlier"
+                className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-line-strong bg-white/[0.03] text-muted transition-colors duration-250 ease-expo hover:border-accent/40 hover:text-ink disabled:cursor-not-allowed disabled:opacity-40"
+              >
+                <ChevronLeftIcon />
+              </button>
 
-            <button
-              type="button"
-              disabled={busy || index === 0}
-              onClick={() => onMove(index, -1)}
-              title="Move earlier"
-              aria-label="Move project earlier"
-              className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-line-strong bg-white/[0.03] text-muted transition-colors duration-250 ease-expo hover:border-accent/40 hover:text-ink disabled:cursor-not-allowed disabled:opacity-40"
-            >
-              <ChevronLeftIcon />
-            </button>
+              <button
+                type="button"
+                disabled={busy || index === total - 1}
+                onClick={() => onMove(index, 1)}
+                title="Move later"
+                aria-label="Move project later"
+                className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-line-strong bg-white/[0.03] text-muted transition-colors duration-250 ease-expo hover:border-accent/40 hover:text-ink disabled:cursor-not-allowed disabled:opacity-40"
+              >
+                <ChevronRightIcon />
+              </button>
 
-            <button
-              type="button"
-              disabled={busy || index === total - 1}
-              onClick={() => onMove(index, 1)}
-              title="Move later"
-              aria-label="Move project later"
-              className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-line-strong bg-white/[0.03] text-muted transition-colors duration-250 ease-expo hover:border-accent/40 hover:text-ink disabled:cursor-not-allowed disabled:opacity-40"
-            >
-              <ChevronRightIcon />
-            </button>
+              <button
+                type="button"
+                disabled={busy}
+                onClick={() => onEdit(project)}
+                className="btn-ghost btn-sm ml-auto"
+              >
+                Edit
+              </button>
 
-            <button
-              type="button"
-              disabled={busy}
-              onClick={() => onEdit(project)}
-              className="btn-ghost btn-sm ml-auto"
-            >
-              Edit
-            </button>
-
-            <button
-              type="button"
-              disabled={busy}
-              onClick={() => onDelete(project)}
-              className="btn-danger"
-            >
-              Delete
-            </button>
-          </div>
-        )}
+              <button
+                type="button"
+                disabled={busy}
+                onClick={() => onDelete(project)}
+                className="btn-danger"
+              >
+                Delete
+              </button>
+            </div>
+          )}
+        </div>
       </div>
 
       {pinnedReviews.length > 0 && <PinnedReviews reviews={pinnedReviews} />}

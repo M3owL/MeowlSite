@@ -159,6 +159,12 @@ const adminCard = render(
 expect('admin controls present', adminCard, 'Edit', 'Delete', 'Pin', 'Pinned reviews');
 expectNot('first card cannot move earlier', adminCard, 'aria-label="Move project earlier" disabled=""');
 expect('first card can move later', adminCard, 'aria-label="Move project later"');
+const publicPortfolioCard = render(
+  'ProjectCard public without editor metadata',
+  <ProjectCard project={{ ...project, pinned: true, workScope: ['game_text', 'ui'] }} reviews={[]} isAdmin={false} index={0} total={1} />,
+);
+expectNot('public project hides assigned work tags', publicPortfolioCard, 'In-game text &amp; narrative', 'UI, menus &amp; system messages');
+expect('public project keeps the Pinned badge', publicPortfolioCard, '>Pinned<');
 
 // ------------------------------------------------------------- ReviewCard
 

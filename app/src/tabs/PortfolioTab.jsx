@@ -33,11 +33,8 @@ function PlusIcon() {
 /**
  * Portfolio.
  *
- * Every project renders in one uniform grid, pinned first. An earlier pass
- * hoisted pinned projects into full-width featured cards; that card was taller
- * than the viewport at 1440px, so the tab looked like it held a single project
- * and everything else only appeared after scrolling. Pinning now only changes
- * the order and the card's accent border.
+ * Projects render as wide, compact rows. Pinned projects still sort first and
+ * keep their visual mark without changing the card's shape.
  *
  * The cards are also deliberately not wrapped in a scroll-reveal. They start at
  * `opacity: 0` and only fade in once they intersect the viewport, which is
@@ -129,8 +126,8 @@ export default function PortfolioTab({
     <div className="relative">
       <header className="section-head">
         <div className="min-w-0">
-          <p className="eyebrow mb-2">Selected work</p>
-          <h2 className="mt-3 text-display-2">Selected work</h2>
+          <p className="eyebrow mb-2">Portfolio</p>
+          <h2 className="mt-3 text-display-2">Game translation projects</h2>
           <p className="lead mt-4 max-w-2xl">A look at the games and language projects I have worked on.</p>
         </div>
 
@@ -149,7 +146,7 @@ export default function PortfolioTab({
       {sorted.length === 0 ? (
         <p className="py-16 text-center text-body-lg text-muted">No projects added yet.</p>
       ) : (
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+        <div className="space-y-6">
           {rows.map((row) => (
             <ProjectCard
               key={row.project.id}
