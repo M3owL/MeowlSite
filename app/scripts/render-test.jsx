@@ -427,6 +427,8 @@ expect(
   'UI &amp; gameplay text',
   'Polish proofreading',
   '$0.015',
+  '$0.008',
+  'Included with localization',
   'Brief',
   'Request a quote',
 );

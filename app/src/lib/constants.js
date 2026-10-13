@@ -46,7 +46,7 @@ export const ABOUT = {
   focus: 'Indie & mid-size games',
   body: [
     'I am a Polish game translator working from English into Polish. I started working as a translator in late 2025 and I work with indie and mid-size studios.',
-    'My work covers in-game text, UI strings, dialogue and subtitles, plus proofreading of Polish text that already exists. I keep a glossary for every project so terminology stays consistent across patches and DLC, and I flag anything in the English source that will not survive a literal translation.',
+    'My work covers in-game text, UI strings, dialogue and subtitles. Proofreading is included with translation, along with an in-game text check when a playable build is available. I keep a glossary for every project so terminology stays consistent across patches and DLC.',
     'Send me the files, the word count and the deadline, and you get a fixed price and a delivery date back. The portfolio shows what the work looks like in practice.',
   ],
   /**
@@ -91,9 +91,9 @@ export const SERVICES = [
   {
     id: 'proofreading',
     title: 'Polish proofreading',
-    summary: 'A second pass over text you already have.',
+    summary: 'Included with translation, or available on its own.',
     detail:
-      'Checking a translation for accuracy, consistency and natural phrasing — whether it came from another translator, from a machine, or from an earlier patch. You get the corrected text back, plus a note on anything that needed a judgement call.',
+      'A second pass for accuracy, consistency and natural phrasing. Included at no extra charge when I translate the text; standalone proofreading is $0.008 per word.',
   },
 ];
 
@@ -121,7 +121,7 @@ export const PROCESS = [
   {
     step: '05',
     title: 'QA pass',
-    detail: 'Second read for consistency, placeholders, variables and overflow.',
+    detail: 'Proofreading is included with translation. I also check the translated text in game when a playable build is available.',
   },
   {
     step: '06',
@@ -132,16 +132,14 @@ export const PROCESS = [
 
 // ------------------------------------------------------------ rates
 
-/**
- * Only the localization rate is confirmed. Proofreading has no agreed figure,
- * so it says "On request" rather than carrying a number the owner never set.
- */
+/** Proofreading is charged separately only when no translation is commissioned. */
 export const RATES = [
-  { service: 'Localization, English to Polish', unit: 'per word', from: '$0.015' },
-  { service: 'Proofreading', unit: 'per word', from: 'On request' },
+  { service: 'Localization, English to Polish', unit: 'per word', price: '$0.015', prefix: 'From' },
+  { service: 'Standalone proofreading', unit: 'per word', price: '$0.008' },
 ];
 
 export const RATE_NOTES = {
+  included: 'Proofreading is included with localization at no extra charge. An in-game text check is included when a playable build is available.',
   model: [
     'Per word for localization — the number you get is the number you pay.',
     'Fixed price per project for anything that is not straight text.',

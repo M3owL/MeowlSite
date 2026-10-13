@@ -16,16 +16,21 @@ export default function RateCard({ onNavigate }) {
               <p className="font-display text-body font-semibold text-ink">{rate.service}</p>
             </div>
             <div className="text-right">
-              {rate.from !== 'On request' && <p className="text-caption text-faint">From</p>}
-              <p className="font-display text-h3 font-semibold text-accent">{rate.from}</p>
-              {rate.from !== 'On request' && <p className="text-caption text-faint">{rate.unit}</p>}
+              {rate.prefix && <p className="text-caption text-faint">{rate.prefix}</p>}
+              <p className="font-display text-h3 font-semibold text-accent">{rate.price}</p>
+              <p className="text-caption text-faint">{rate.unit}</p>
             </div>
           </li>
         ))}
       </ul>
 
+      <div className="border-t border-line bg-accent/[0.05] px-6 py-4 sm:px-7">
+        <p className="text-caption font-semibold text-accent">Included with localization</p>
+        <p className="mt-1 text-caption leading-relaxed text-muted">{RATE_NOTES.included}</p>
+      </div>
+
       <div className="border-t border-line px-6 py-5 sm:px-7">
-        <p className="text-caption leading-relaxed text-muted">Starting rates are a guide. Send the files, word count and deadline for a fixed project quote.</p>
+        <p className="text-caption leading-relaxed text-muted">Send the files, word count and deadline for a fixed project quote.</p>
         <button type="button" className="btn-primary mt-4 w-full" onClick={() => onNavigate?.('contact')}>
           Request a quote <span aria-hidden="true">↗</span>
         </button>
