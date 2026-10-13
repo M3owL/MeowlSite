@@ -13,6 +13,7 @@ import Header from '../src/components/Header';
 import Footer from '../src/components/Footer';
 import Modal from '../src/components/ui/Modal';
 import ProjectCard from '../src/components/ProjectCard';
+import ProjectIndexItem from '../src/components/ProjectIndexItem';
 import ReviewCard from '../src/components/ReviewCard';
 import PinnedReviews from '../src/components/PinnedReviews';
 import AboutTab from '../src/tabs/AboutTab';
@@ -255,6 +256,13 @@ const portfolio = render(
   />,
 );
 expect('portfolio lists projects', portfolio, 'Stardew Valley', 'Second', 'Add Project');
+expect('portfolio offers three display modes', portfolio, 'Overview view', 'Cards view', 'List view');
+const overviewItem = render(
+  'compact pinned project',
+  <ProjectIndexItem project={{ ...project, pinned: true, workScope: ['game_text'] }} view="overview" onExpand={noop} isAdmin={false} onEdit={noop} />,
+);
+expect('overview preserves project identity and details action', overviewItem, 'Stardew Valley', 'Pinned', 'Details');
+expectNot('overview hides work-scope tags', overviewItem, 'In-game text &amp; narrative');
 // pinned project must sort first regardless of sort_order
 if (portfolio.indexOf('Second') < portfolio.indexOf('Stardew Valley')) {
   passed += 1;

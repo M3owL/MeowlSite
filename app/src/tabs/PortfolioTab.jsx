@@ -1,5 +1,6 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import ProjectCard from '../components/ProjectCard';
+import ProjectIndexItem from '../components/ProjectIndexItem';
 import { getSupabase } from '../lib/supabase';
 import { moveItem } from '../lib/format';
 
@@ -30,11 +31,27 @@ function PlusIcon() {
   );
 }
 
+const VIEW_MODES = [
+  { id: 'overview', label: 'Overview' },
+  { id: 'cards', label: 'Cards' },
+  { id: 'list', label: 'List' },
+];
+
+function ViewIcon({ mode }) {
+  return (
+    <svg aria-hidden="true" width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      {mode === 'overview' && <><rect x="2" y="2" width="7" height="7" rx="1" /><rect x="11" y="2" width="7" height="7" rx="1" /><rect x="2" y="11" width="7" height="7" rx="1" /><rect x="11" y="11" width="7" height="7" rx="1" /></>}
+      {mode === 'cards' && <><rect x="2" y="3" width="16" height="6" rx="1" /><rect x="2" y="11" width="16" height="6" rx="1" /><path d="M8 3v6M8 11v6" /></>}
+      {mode === 'list' && <><path d="M3 4h2m3 0h9M3 10h2m3 0h9M3 16h2m3 0h9" /></>}
+    </svg>
+  );
+}
+
 /**
  * Portfolio.
  *
- * Projects render as wide, compact rows. Pinned projects still sort first and
- * keep their visual mark without changing the card's shape.
+ * The initial overview favors scanning every project; visitors can switch to
+ * full cards or a compact list. Pinned projects sort first in every mode.
  *
  * The cards are also deliberately not wrapped in a scroll-reveal. They start at
  * `opacity: 0` and only fade in once they intersect the viewport, which is
@@ -53,7 +70,28 @@ export default function PortfolioTab({
   openProjectModal,
 }) {
   const [busy, setBusy] = useState(false);
+  const [viewMode, setViewMode] = useState('overview');
+  const [focusProjectId, setFocusProjectId] = useState(null);
   const sorted = useMemo(() => sortProjects(projects), [projects]);
+
+  useEffect(() => {
+    if (viewMode !== 'cards' || focusProjectId === null) return undefined;
+    const frame = requestAnimationFrame(() => {
+      const projectNode = document.getElementById(`portfolio-project-${focusProjectId}`);
+      projectNode?.focus({ preventScroll: true });
+      projectNode?.scrollIntoView({
+        block: 'start',
+        behavior: window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches ? 'auto' : 'smooth',
+      });
+      setFocusProjectId(null);
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [viewMode, focusProjectId]);
+
+  const showDetails = (id) => {
+    setFocusProjectId(id);
+    setViewMode('cards');
+  };
 
   /**
    * `index` is the position in the *full* sorted list -- it is what the reorder
@@ -124,45 +162,75 @@ export default function PortfolioTab({
 
   return (
     <div className="relative">
-      <header className="section-head">
+      <header className="mb-5 flex flex-col gap-4 border-b border-line pb-5 sm:flex-row sm:items-end sm:justify-between">
         <div className="min-w-0">
-          <p className="eyebrow mb-2">Portfolio</p>
-          <h2 className="mt-3 text-display-2">Game translation projects</h2>
-          <p className="lead mt-4 max-w-2xl">A look at the games and language projects I have worked on.</p>
+          <p className="eyebrow">Portfolio / {sorted.length} {sorted.length === 1 ? 'project' : 'projects'}</p>
+          <h2 className="mt-2 text-h1">Game translation projects</h2>
         </div>
 
-        {isAdmin && (
-          <button
-            type="button"
-            onClick={() => openProjectModal(null)}
-            className="btn-primary shrink-0"
-          >
-            <PlusIcon />
-            Add Project
-          </button>
-        )}
+        <div className="flex flex-wrap items-center gap-3">
+          {sorted.length > 0 && (
+            <div role="group" aria-label="Portfolio display" className="inline-flex items-center gap-1 rounded-lg border border-line-strong bg-surface-2/60 p-1">
+              {VIEW_MODES.map((mode) => (
+                <button
+                  key={mode.id}
+                  type="button"
+                  title={`${mode.label} view`}
+                  aria-label={`${mode.label} view`}
+                  aria-pressed={viewMode === mode.id}
+                  onClick={() => { setFocusProjectId(null); setViewMode(mode.id); }}
+                  className={`inline-flex items-center gap-1.5 rounded-md px-2.5 py-2 text-caption font-semibold transition-colors ${viewMode === mode.id ? 'bg-accent/15 text-accent' : 'text-muted hover:bg-white/[0.05] hover:text-ink'}`}
+                >
+                  <ViewIcon mode={mode.id} />
+                  <span className="hidden sm:inline">{mode.label}</span>
+                </button>
+              ))}
+            </div>
+          )}
+          {isAdmin && (
+            <button type="button" onClick={() => openProjectModal(null)} className="btn-primary shrink-0">
+              <PlusIcon /> Add Project
+            </button>
+          )}
+        </div>
       </header>
 
       {sorted.length === 0 ? (
         <p className="py-16 text-center text-body-lg text-muted">No projects added yet.</p>
       ) : (
-        <div className="space-y-6">
-          {rows.map((row) => (
-            <ProjectCard
-              key={row.project.id}
-              project={row.project}
-              reviews={reviews}
-              isAdmin={isAdmin}
-              index={row.index}
-              total={sorted.length}
-              busy={busy}
-              onEdit={openProjectModal}
-              onDelete={deleteProject}
-              onTogglePin={togglePin}
-              onMove={move}
-            />
-          ))}
-        </div>
+        viewMode === 'cards' ? (
+          <div className="space-y-6">
+            {rows.map((row) => (
+              <div key={row.project.id} id={`portfolio-project-${row.project.id}`} tabIndex={-1} className="scroll-mt-28">
+                <ProjectCard
+                  project={row.project}
+                  reviews={reviews}
+                  isAdmin={isAdmin}
+                  index={row.index}
+                  total={sorted.length}
+                  busy={busy}
+                  onEdit={openProjectModal}
+                  onDelete={deleteProject}
+                  onTogglePin={togglePin}
+                  onMove={move}
+                />
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className={viewMode === 'list' ? 'space-y-2.5' : 'grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5'}>
+            {rows.map((row) => (
+              <ProjectIndexItem
+                key={row.project.id}
+                project={row.project}
+                view={viewMode}
+                isAdmin={isAdmin}
+                onEdit={openProjectModal}
+                onExpand={showDetails}
+              />
+            ))}
+          </div>
+        )
       )}
     </div>
   );
