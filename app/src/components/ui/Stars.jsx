@@ -65,7 +65,7 @@ export default function Stars({ value, size = 'sm' }) {
       <StarRow size={px} className="text-line-strong" />
 
       <span
-        className="absolute inset-y-0 left-0 flex overflow-hidden text-amber-400"
+        className="absolute inset-y-0 left-0 flex overflow-hidden text-amber-600"
         style={{ width: `${percent}%` }}
         aria-hidden="true"
       >
@@ -83,7 +83,7 @@ export function RatingBadge({ ratings, size = 'sm' }) {
 
   return (
     <div className="flex shrink-0 flex-col items-end gap-1">
-      <span className="font-mono text-caption font-semibold text-amber-400">
+      <span className="font-mono text-caption font-semibold text-amber-700">
         {average.toFixed(1)} / 5
       </span>
       <Stars value={average} size={size} />

@@ -19,35 +19,35 @@ export default {
 
       colors: {
         // ---- legacy aliases (do not remove) --------------------------------
-        dark: '#0a1018',
-        darker: '#04070d',
+        dark: '#f0f4f2',
+        darker: '#f6f8f7',
 
         // ---- surfaces ------------------------------------------------------
-        void: '#04070d',
+        void: '#f6f8f7',
         surface: {
-          DEFAULT: '#0a1018',
-          2: '#101a26',
-          3: '#16232f',
+          DEFAULT: '#ffffff',
+          2: '#f0f4f2',
+          3: '#e5ede9',
         },
 
         // ---- hairlines -----------------------------------------------------
-        line: 'rgba(255, 255, 255, 0.07)',
-        'line-strong': 'rgba(255, 255, 255, 0.12)',
+        line: 'rgba(24, 50, 43, 0.09)',
+        'line-strong': 'rgba(24, 50, 43, 0.16)',
 
         // ---- accent --------------------------------------------------------
         // `accent` stays a DEFAULT-carrying scale so `text-accent`,
         // `bg-accent/20`, `border-accent/70` and `from-accent` keep working.
         accent: {
-          DEFAULT: '#06b6d4',
-          2: '#22d3ee',
-          3: '#0e7490',
+          DEFAULT: '#16786f',
+          2: '#0f665e',
+          3: '#cce4df',
         },
-        iris: '#6366f1',
+        iris: '#54736c',
 
         // ---- type ----------------------------------------------------------
-        ink: '#e8f1f7',
-        muted: '#93a6b8',
-        faint: '#5b6d7e',
+        ink: '#1d2b27',
+        muted: '#596963',
+        faint: '#68766f',
       },
 
       fontFamily: {
@@ -97,14 +97,14 @@ export default {
       },
 
       boxShadow: {
-        e1: '0 1px 2px rgba(0, 0, 0, 0.40)',
-        e2: '0 4px 16px -4px rgba(0, 0, 0, 0.50)',
-        e3: '0 12px 32px -8px rgba(0, 0, 0, 0.60)',
-        e4: '0 24px 64px -16px rgba(0, 0, 0, 0.70)',
-        glow: '0 0 0 1px rgba(6, 182, 212, 0.35), 0 0 32px -4px rgba(6, 182, 212, 0.35)',
-        'glow-sm': '0 0 20px -4px rgba(6, 182, 212, 0.40)',
-        'glow-lg': '0 0 0 1px rgba(6, 182, 212, 0.45), 0 0 64px -8px rgba(6, 182, 212, 0.45)',
-        hairline: 'inset 0 1px 0 0 rgba(255, 255, 255, 0.06)',
+        e1: '0 1px 2px rgba(25, 48, 41, 0.04)',
+        e2: '0 6px 20px -8px rgba(25, 48, 41, 0.12)',
+        e3: '0 14px 36px -16px rgba(25, 48, 41, 0.16)',
+        e4: '0 18px 42px -20px rgba(25, 48, 41, 0.18)',
+        glow: '0 0 0 1px rgba(22, 120, 111, 0.10), 0 8px 22px -10px rgba(22, 120, 111, 0.18)',
+        'glow-sm': '0 5px 14px -8px rgba(22, 120, 111, 0.28)',
+        'glow-lg': '0 0 0 1px rgba(22, 120, 111, 0.14), 0 12px 28px -12px rgba(22, 120, 111, 0.20)',
+        hairline: 'inset 0 1px 0 0 rgba(25, 48, 41, 0.04)',
       },
 
       // Named `expo` / `spring` / `soft` rather than `out` on purpose: overriding

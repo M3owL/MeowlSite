@@ -72,87 +72,76 @@ function StatValue({ value, suffix, active }) {
 
 /* ------------------------------------------------------------------- tab */
 
-export default function AboutTab({ projects = [], onNavigate }) {
+export default function AboutTab({ metrics = {}, onNavigate }) {
   const [statsRef, statsInView] = useInView();
 
-  /**
-   * `live: 'projects'` is the database count. Tiles that resolve to zero are
-   * dropped, and if that empties the row the whole section disappears rather
-   * than showing four zeros.
-   */
   const stats = STATS.map((stat) => ({
     ...stat,
-    value: stat.live === 'projects' ? projects.length : stat.value,
+    value: Number(metrics[stat.id]) || 0,
   })).filter((stat) => Number(stat.value) > 0);
 
   return (
-    <div className="mx-auto max-w-5xl space-y-12 sm:space-y-16">
+    <div className="mx-auto max-w-6xl space-y-16 sm:space-y-20">
       {/* ------------------------------------------------------------- hero */}
-      <section className="relative">
-        <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
-          <div className="absolute left-1/2 top-[-6rem] h-72 w-[42rem] -translate-x-1/2 rounded-full bg-accent/20 blur-3xl" />
-        </div>
+      <section className="relative max-w-5xl">
+        <Reveal index={0} className="flex flex-wrap items-center gap-x-3 gap-y-2">
+          <span className="eyebrow">{BRAND.role}</span>
+          <span aria-hidden="true" className="hidden h-3 w-px bg-line-strong sm:block" />
+          <span className="meta">{ABOUT.focus}</span>
+          <span aria-hidden="true" className="hidden h-3 w-px bg-line-strong sm:block" />
+          <span className="meta">{BRAND.location}</span>
+        </Reveal>
 
-        <div className="relative">
-          <Reveal index={0} className="flex flex-wrap items-center gap-x-3 gap-y-2">
-            <span className="eyebrow">{BRAND.role}</span>
-            <span aria-hidden="true" className="hidden h-3 w-px bg-line-strong sm:block" />
-            <span className="meta">{ABOUT.focus}</span>
-            <span aria-hidden="true" className="hidden h-3 w-px bg-line-strong sm:block" />
-            <span className="meta">{BRAND.location}</span>
-          </Reveal>
+        <Reveal as="h2" index={1} className="mt-6 max-w-4xl text-display-2 text-ink sm:mt-8">
+          {ABOUT.heading}
+        </Reveal>
 
-          <Reveal as="h2" index={1} className="mt-5 max-w-4xl text-display-1 text-ink">
-            {ABOUT.heading}
-          </Reveal>
+        <Reveal as="p" index={2} className="lead mt-5 max-w-2xl sm:mt-6">
+          {ABOUT.intro}
+        </Reveal>
 
-          <Reveal as="p" index={2} className="lead mt-6 max-w-2xl">
-            {ABOUT.intro}
-          </Reveal>
-
-          <Reveal index={3} className="mt-6 flex flex-wrap items-center gap-x-3 gap-y-2">
-            {ABOUT.languagePairs.map((pair, index) => (
-              <span key={`${pair.from}-${pair.to}`} className="flex items-center gap-3">
-                {index > 0 ? (
-                  <span aria-hidden="true" className="text-faint">
-                    ·
-                  </span>
-                ) : null}
-                <span
-                  className={`text-body ${
-                    pair.primary ? 'font-semibold text-ink' : 'text-muted'
-                  }`}
-                >
-                  {pair.from} → {pair.to}
+        <Reveal index={3} className="mt-6 flex flex-wrap items-center gap-x-3 gap-y-2">
+          {ABOUT.languagePairs.map((pair, index) => (
+            <span key={`${pair.from}-${pair.to}`} className="flex items-center gap-3">
+              {index > 0 ? (
+                <span aria-hidden="true" className="text-faint">
+                  ·
                 </span>
+              ) : null}
+              <span
+                className={`text-body ${
+                  pair.primary ? 'font-semibold text-ink' : 'text-muted'
+                }`}
+              >
+                {pair.from} → {pair.to}
               </span>
-            ))}
-          </Reveal>
+            </span>
+          ))}
+        </Reveal>
 
-          <Reveal index={4} className="mt-6 flex flex-wrap items-center gap-x-3 gap-y-2">
-            <AvailabilityDot open={BRAND.availability.open} />
-            <span className="text-caption font-semibold text-ink">{BRAND.availability.label}</span>
-            <span className="meta">{BRAND.availability.note}</span>
-          </Reveal>
+        <Reveal index={4} className="mt-6 flex flex-wrap items-center gap-x-3 gap-y-2">
+          <AvailabilityDot open={BRAND.availability.open} />
+          <span className="text-caption font-semibold text-ink">{BRAND.availability.label}</span>
+          <span className="meta">{BRAND.availability.note}</span>
+        </Reveal>
 
-          <Reveal index={5} className="mt-9 flex flex-col gap-3 sm:flex-row sm:items-center">
-            <button
-              type="button"
-              className="btn-primary btn-lg"
-              onClick={() => onNavigate?.('contact')}
-            >
-              {COPY.getQuote}
-              <ArrowRight />
-            </button>
-            <button
-              type="button"
-              className="btn-ghost btn-lg"
-              onClick={() => onNavigate?.('portfolio')}
-            >
-              {COPY.seeWork}
-            </button>
-          </Reveal>
-        </div>
+        <Reveal index={5} className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
+          <button
+            type="button"
+            className="btn-primary btn-lg"
+            onClick={() => onNavigate?.('contact')}
+          >
+            {COPY.getQuote}
+            <ArrowRight />
+          </button>
+          <button
+            type="button"
+            className="btn-ghost btn-lg"
+            onClick={() => onNavigate?.('portfolio')}
+          >
+            {COPY.seeWork}
+          </button>
+        </Reveal>
       </section>
 
       {/* ------------------------------------------------------------ stats */}
@@ -162,17 +151,16 @@ export default function AboutTab({ projects = [], onNavigate }) {
             {COPY.statsEyebrow}
           </Reveal>
 
-          {/* Three tiles, so the row is three wide at `lg` rather than leaving a
-              gap where the language-pairs tile used to sit. */}
-          <div className="mt-6 grid gap-4 xs:grid-cols-2 lg:grid-cols-3">
+          {/* Two published figures get equal space and a quiet divider. */}
+          <div className="mt-5 grid grid-cols-1 border-y border-line sm:grid-cols-2">
             {stats.map((stat, index) => (
               <Reveal
                 key={stat.id}
                 index={index}
-                className="rounded-xl border border-line bg-surface-2/40 px-5 py-6"
+                className={`py-6 sm:py-7 ${index === 0 && stats.length > 1 ? 'border-b border-line sm:border-b-0 sm:border-r sm:pr-8' : ''} ${index > 0 ? 'sm:pl-8' : ''}`}
               >
                 <StatValue value={stat.value} suffix={stat.suffix} active={statsInView} />
-                <span className="meta mt-3 block">{stat.label}</span>
+                <span className="meta mt-2.5 block">{stat.label}</span>
               </Reveal>
             ))}
           </div>
@@ -195,25 +183,18 @@ export default function AboutTab({ projects = [], onNavigate }) {
       </section>
 
       {/* -------------------------------------------------------- closing cta */}
-      <Reveal className="relative overflow-hidden rounded-2xl border border-accent/25 bg-gradient-to-br from-accent/[0.12] via-surface-2/60 to-iris/[0.10] p-8 sm:p-12">
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute -right-16 -top-16 h-56 w-56 rounded-full bg-accent/20 blur-3xl"
-        />
+      <Reveal className="rounded-2xl border border-line bg-white p-7 shadow-e1 sm:p-10">
+        <h2 className="max-w-2xl text-h1">{CONTACT.heading}</h2>
+        <p className="lead mt-4 max-w-xl">{CONTACT.intro}</p>
 
-        <div className="relative">
-          <h2 className="max-w-2xl text-h1">{CONTACT.heading}</h2>
-          <p className="lead mt-4 max-w-xl">{CONTACT.intro}</p>
-
-          <button
-            type="button"
-            className="btn-primary btn-lg mt-8"
-            onClick={() => onNavigate?.('contact')}
-          >
-            {COPY.getQuote}
-            <ArrowRight />
-          </button>
-        </div>
+        <button
+          type="button"
+          className="btn-primary btn-lg mt-8"
+          onClick={() => onNavigate?.('contact')}
+        >
+          {COPY.getQuote}
+          <ArrowRight />
+        </button>
       </Reveal>
     </div>
   );

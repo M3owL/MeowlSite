@@ -4,7 +4,7 @@ export default function ErrorBanner({ message, onDismiss }) {
   return (
     <div
       role="alert"
-      className="mb-8 flex animate-slide-in-down items-start gap-3 rounded-lg border border-red-500/30 bg-red-500/10 p-4 text-body text-red-200"
+      className="mb-8 flex animate-slide-in-down items-start gap-3 rounded-lg border border-red-700/20 bg-red-50 p-4 text-body text-red-800"
     >
       <svg
         aria-hidden="true"
@@ -15,7 +15,7 @@ export default function ErrorBanner({ message, onDismiss }) {
         stroke="currentColor"
         strokeWidth="2"
         strokeLinecap="round"
-        className="mt-0.5 shrink-0 text-red-300"
+        className="mt-0.5 shrink-0 text-red-600"
       >
         <circle cx="12" cy="12" r="9" />
         <path d="M12 7.5v5" />
@@ -30,7 +30,7 @@ export default function ErrorBanner({ message, onDismiss }) {
         type="button"
         onClick={onDismiss}
         aria-label="Dismiss error"
-        className="-mr-1 -mt-1 shrink-0 rounded-md p-1 text-red-300 transition-colors duration-250 ease-expo hover:bg-red-500/20 hover:text-white"
+        className="-mr-1 -mt-1 shrink-0 rounded-md p-1 text-red-600 transition-colors duration-250 ease-expo hover:bg-red-100 hover:text-red-800"
       >
         <svg
           aria-hidden="true"

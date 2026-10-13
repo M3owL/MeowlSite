@@ -21,6 +21,8 @@ export function normalizeProject(row) {
     title: str(row.title),
     steamLink: str(row.steamLink ?? row.steam_url),
     details: str(row.details),
+    workScope: Array.isArray(row.work_scope) ? row.work_scope : [],
+    reportSeed: str(row.report_seed),
     bg_url: str(row.bg_url),
     logo_url: str(row.logo_url),
     pinnedReviews: Array.isArray(row.pinnedReviews)

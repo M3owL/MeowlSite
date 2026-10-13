@@ -27,12 +27,12 @@ function ErrorNote({ children }) {
   return (
     <div
       role="alert"
-      className="flex items-start gap-2.5 rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-2.5 text-caption text-red-200"
+      className="flex items-start gap-2.5 rounded-lg border border-red-700/20 bg-red-50 px-3 py-2.5 text-caption text-red-800"
     >
       <svg
         viewBox="0 0 24 24"
         aria-hidden="true"
-        className="mt-px h-4 w-4 shrink-0 text-red-400"
+        className="mt-px h-4 w-4 shrink-0 text-red-600"
         fill="none"
         stroke="currentColor"
         strokeWidth="2"

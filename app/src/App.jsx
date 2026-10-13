@@ -21,12 +21,14 @@ import { DEFAULT_TAB, TOAST_MS } from './lib/constants';
 import { useScrollProgress, useTabTransition } from './lib/motion';
 
 const EMPTY_MODAL = { type: null, data: null };
+const EMPTY_METRICS = { completedProjects: 0, translatedWords: 0 };
 
 export default function App() {
   const [session, setSession] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [reviews, setReviews] = useState([]);
   const [projects, setProjects] = useState([]);
+  const [metrics, setMetrics] = useState(EMPTY_METRICS);
   const [inviteCodes, setInviteCodes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -83,6 +85,23 @@ export default function App() {
     if (queryError) return setError(describeError(queryError));
 
     setProjects((data ?? []).map(normalizeProject));
+  }, []);
+
+  const loadMetrics = useCallback(async () => {
+    const client = getSupabase();
+    if (!client) return;
+
+    const { data, error: queryError } = await client
+      .from('site_settings')
+      .select('completed_projects, translated_words')
+      .eq('id', 'portfolio_metrics')
+      .maybeSingle();
+
+    if (queryError) return;
+    setMetrics({
+      completedProjects: Number(data?.completed_projects) || 0,
+      translatedWords: Number(data?.translated_words) || 0,
+    });
   }, []);
 
   const loadInviteCodes = useCallback(async () => {
@@ -143,7 +162,7 @@ export default function App() {
         const admin = await checkAdmin(current);
         if (cancelled) return;
 
-        await Promise.all([loadReviews(admin), loadProjects()]);
+        await Promise.all([loadReviews(admin), loadProjects(), loadMetrics()]);
 
         if (admin && !cancelled) await loadInviteCodes();
       } catch (bootError) {
@@ -156,7 +175,7 @@ export default function App() {
     return () => {
       cancelled = true;
     };
-  }, [checkAdmin, loadInviteCodes, loadProjects, loadReviews]);
+  }, [checkAdmin, loadInviteCodes, loadMetrics, loadProjects, loadReviews]);
 
   // --------------------------------------------------------------- realtime
 
@@ -178,6 +197,11 @@ export default function App() {
       )
       .on(
         'postgres_changes',
+        { event: '*', schema: 'public', table: 'site_settings' },
+        () => loadMetrics(),
+      )
+      .on(
+        'postgres_changes',
         { event: '*', schema: 'public', table: 'invite_codes' },
         () => {
           if (isAdminRef.current) loadInviteCodes();
@@ -188,7 +212,7 @@ export default function App() {
     return () => {
       client.removeChannel(channel);
     };
-  }, [loadInviteCodes, loadProjects, loadReviews]);
+  }, [loadInviteCodes, loadMetrics, loadProjects, loadReviews]);
 
   /** Keeps the UI in sync when Supabase refreshes or drops the session. */
   useEffect(() => {
@@ -240,7 +264,7 @@ export default function App() {
       return;
     }
 
-    await Promise.all([loadReviews(true), loadProjects(), loadInviteCodes()]);
+    await Promise.all([loadReviews(true), loadProjects(), loadInviteCodes(), loadMetrics()]);
 
     closeModal();
     setActiveTab('admin');
@@ -270,6 +294,8 @@ export default function App() {
       bg_url: form.bg_url?.trim() || null,
       logo_url: form.logo_url?.trim() || null,
       details: form.details || '',
+      work_scope: form.workScope || [],
+      report_seed: form.reportSeed || '',
       pinned_reviews: form.pinnedReviews || [],
       pinned: Boolean(form.pinned),
       sort_order: Number(form.sort_order) || 0,
@@ -288,6 +314,44 @@ export default function App() {
     await loadProjects();
     closeModal();
     setToast(editing ? 'Project updated.' : 'Project created.');
+  };
+
+  const saveMetrics = async (nextMetrics) => {
+    const client = getSupabase();
+    if (!client) {
+      setError('Could not connect to Supabase.');
+      return false;
+    }
+
+    const completedProjects = Number(nextMetrics.completedProjects);
+    const translatedWords = Number(nextMetrics.translatedWords);
+    if (
+      !Number.isSafeInteger(completedProjects) || completedProjects < 0 || completedProjects > 2147483647 ||
+      !Number.isSafeInteger(translatedWords) || translatedWords < 0
+    ) {
+      setError('Enter whole numbers greater than or equal to zero.');
+      return false;
+    }
+
+    const { error: saveError } = await client
+      .from('site_settings')
+      .update({
+        completed_projects: completedProjects,
+        translated_words: translatedWords,
+      })
+      .eq('id', 'portfolio_metrics')
+      .select('id')
+      .single();
+
+    if (saveError) {
+      setError(describeError(saveError));
+      return false;
+    }
+
+    await loadMetrics();
+    setError('');
+    setToast('Public statistics updated.');
+    return true;
   };
 
   // Hidden admin entry: three quick clicks on the bottom-left corner.
@@ -359,7 +423,7 @@ export default function App() {
               className={phase === 'exit' ? 'animate-tab-out' : 'animate-tab-in'}
             >
               {renderedTab === 'about' && (
-                <AboutTab projects={projects} reviews={reviews} onNavigate={setActiveTab} />
+                <AboutTab metrics={metrics} reviews={reviews} onNavigate={setActiveTab} />
               )}
 
               {renderedTab === 'services' && <ServicesTab onNavigate={setActiveTab} />}
@@ -390,6 +454,8 @@ export default function App() {
                 <AdminTab
                   reviews={reviews}
                   inviteCodes={inviteCodes}
+                  metrics={metrics}
+                  onSaveMetrics={saveMetrics}
                   reloadReviews={() => loadReviews(true)}
                   reloadCodes={loadInviteCodes}
                   onError={setError}

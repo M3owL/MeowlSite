@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import SteamImage from './SteamImage';
 import PinnedReviews from './PinnedReviews';
 import { parseSteamAppId, bannerCandidatesFor, logoCandidatesFor } from '../lib/steam';
+import { WORK_AREAS } from '../lib/projectReport';
 
 /**
  * Project card.
@@ -102,6 +103,9 @@ export default function ProjectCard({
 
   const banners = bannerCandidatesFor({ customUrl: project.bg_url, appId });
   const logos = logoCandidatesFor({ customUrl: project.logo_url, appId });
+  const workLabels = WORK_AREAS.filter((area) => project.workScope?.includes(area.id)).map(
+    (area) => area.label,
+  );
 
   const pinnedReviews = project.pinnedReviews
     .map((id) => reviews.find((review) => review.id === id))
@@ -211,7 +215,7 @@ export default function ProjectCard({
         />
 
         <div
-          className="pointer-events-none absolute inset-0 bg-gradient-to-t from-void/90 via-void/25 to-transparent"
+          className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/65 via-black/10 to-transparent"
           aria-hidden="true"
         />
 
@@ -251,6 +255,13 @@ export default function ProjectCard({
             Steam Page
             <ExternalLinkIcon />
           </a>
+        )}
+
+        {workLabels.length > 0 && (
+          <p className="text-caption font-medium text-faint">
+            {workLabels.slice(0, 3).join(' · ')}
+            {workLabels.length > 3 ? ` · +${workLabels.length - 3}` : ''}
+          </p>
         )}
 
         {project.details && (

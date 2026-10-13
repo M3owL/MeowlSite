@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import ReviewCard from '../components/ReviewCard';
 import Reveal from '../components/ui/Reveal';
 import { avatarFallback } from '../lib/format';
@@ -64,6 +64,8 @@ function IconTrash() {
 export default function AdminTab({
   reviews,
   inviteCodes,
+  metrics = { completedProjects: 0, translatedWords: 0 },
+  onSaveMetrics,
   reloadReviews,
   reloadCodes,
   onError,
@@ -72,7 +74,28 @@ export default function AdminTab({
   openGenerateModal,
 }) {
   const [busy, setBusy] = useState(false);
+  const [metricForm, setMetricForm] = useState(() => ({
+    completedProjects: metrics.completedProjects ?? 0,
+    translatedWords: metrics.translatedWords ?? 0,
+  }));
   const client = getSupabase();
+
+  useEffect(() => {
+    setMetricForm({
+      completedProjects: metrics.completedProjects ?? 0,
+      translatedWords: metrics.translatedWords ?? 0,
+    });
+  }, [metrics]);
+
+  const saveMetrics = async (event) => {
+    event.preventDefault();
+    setBusy(true);
+    try {
+      await onSaveMetrics(metricForm);
+    } finally {
+      setBusy(false);
+    }
+  };
 
   const deleteReview = async (id) => {
     if (!window.confirm('Delete this feedback permanently?')) return;
@@ -154,6 +177,56 @@ export default function AdminTab({
         </div>
       </div>
 
+      <Reveal as="section" className="panel mb-10">
+        <div className="mb-5 max-w-2xl">
+          <p className="eyebrow">Public profile</p>
+          <h3 className="mt-2 text-h2">Impact statistics</h3>
+          <p className="mt-2 text-body text-muted">
+            These figures appear on the homepage. Update them whenever your portfolio grows.
+          </p>
+        </div>
+
+        <form
+          onSubmit={saveMetrics}
+          className="grid gap-4 md:grid-cols-[1fr_1fr_auto] md:items-end"
+        >
+          <label>
+            <span className="form-label">Projects completed</span>
+            <input
+              type="number"
+              min="0"
+              max="2147483647"
+              step="1"
+              required
+              value={metricForm.completedProjects ?? 0}
+              onChange={(event) =>
+                setMetricForm((current) => ({ ...current, completedProjects: event.target.value }))
+              }
+              className="form-input"
+            />
+          </label>
+
+          <label>
+            <span className="form-label">Words translated</span>
+            <input
+              type="number"
+              min="0"
+              step="1"
+              required
+              value={metricForm.translatedWords ?? 0}
+              onChange={(event) =>
+                setMetricForm((current) => ({ ...current, translatedWords: event.target.value }))
+              }
+              className="form-input"
+            />
+          </label>
+
+          <button type="submit" disabled={busy} className="btn-primary md:mb-px">
+            {busy ? 'Saving…' : 'Save statistics'}
+          </button>
+        </form>
+      </Reveal>
+
       {inviteCodes.length > 0 && (
         <Reveal as="section" className="mb-10">
           <div className="mb-4 flex items-center gap-3">
@@ -193,7 +266,7 @@ export default function AdminTab({
                     onClick={() => revokeCode(item.id)}
                     title="Revoke"
                     aria-label={`Revoke code ${item.code}`}
-                    className="btn-quiet shrink-0 text-red-300 hover:bg-red-500/15 hover:text-red-200"
+                    className="btn-quiet shrink-0 text-red-700 hover:bg-red-50 hover:text-red-800"
                   >
                     <IconTrash />
                   </button>

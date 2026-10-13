@@ -206,7 +206,7 @@ enabled on `reviews`, `projects`, `invite_codes` and `admin_users`, and that the
 Expected tables:
 
 - `reviews` — `nickname`, `role`, `game_title`, `discord_username`, `avatar_url`, `review_text`, `ratings` (jsonb), `published`, `created_at`
-- `projects` — `title`, `steam_url`, `details`, `bg_url`, `logo_url`, `pinned`, `sort_order`, `pinned_reviews` (jsonb), `bg_offset_x/y`, `logo_offset_x/y`
+- `projects` — `title`, `steam_url`, `details`, `work_scope` (text[]), `report_seed`, `bg_url`, `logo_url`, `pinned`, `sort_order`, `pinned_reviews` (jsonb), `bg_offset_x/y`, `logo_offset_x/y`
 - `invite_codes` — `code`, `nickname`, `role`, `game_title`, `discord_username`, `avatar_url`, `used`
 - `admin_users` — `user_id`
 
@@ -218,6 +218,12 @@ Migrations live in `supabase/`. Run them in the dashboard's SQL Editor.
 - `01-fix-ambiguous-submit-rpc.sql` — drops duplicate overloads of
   `submit_review_with_code` that caused
   *"Could not choose the best candidate function"*. Safe to re-run.
+- `02-site-metrics.sql` — creates the public portfolio metrics row and RLS
+  policies. Run this once to enable editing completed projects and translated
+  word counts from the admin panel.
+- `03-project-work-scope.sql` — stores the work-area selections used to create
+  each project's generated report. Run this once before saving project edits
+  from the updated admin form.
 
 ---
 

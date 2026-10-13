@@ -5,6 +5,7 @@ import SteamImage from '../components/SteamImage';
 import { avatarFallback } from '../lib/format';
 import { uploadPublicFile } from '../lib/storage';
 import { BUCKET_LIMITS } from '../lib/constants';
+import { createProjectReport, WORK_AREAS } from '../lib/projectReport';
 import {
   parseSteamAppId,
   titleFromSteamUrl,
@@ -30,12 +31,12 @@ function ErrorNote({ children }) {
   return (
     <div
       role="alert"
-      className="flex items-start gap-2.5 rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-2.5 text-caption text-red-200"
+      className="flex items-start gap-2.5 rounded-lg border border-red-700/20 bg-red-50 px-3 py-2.5 text-caption text-red-800"
     >
       <svg
         viewBox="0 0 24 24"
         aria-hidden="true"
-        className="mt-px h-4 w-4 shrink-0 text-red-400"
+        className="mt-px h-4 w-4 shrink-0 text-red-600"
         fill="none"
         stroke="currentColor"
         strokeWidth="2"
@@ -73,6 +74,8 @@ function initialForm(project) {
       bg_url: '',
       logo_url: '',
       details: '',
+      workScope: [],
+      reportSeed: Math.random().toString(36).slice(2),
       pinnedReviews: [],
       pinned: false,
       sort_order: 0,
@@ -85,6 +88,8 @@ function initialForm(project) {
 
   return {
     ...project,
+    workScope: Array.isArray(project.workScope) ? project.workScope : [],
+    reportSeed: project.reportSeed || project.id || '',
     pinnedReviews: project.pinnedReviews || [],
     pinned: Boolean(project.pinned),
     sort_order: project.sort_order || 0,
@@ -163,6 +168,12 @@ export default function ProjectFormModal({ project, reviews, onSave, onCancel, o
   const steamLinkTyped = Boolean(String(form.steamLink || '').trim());
   const steamLinkBroken = steamLinkTyped && !appId;
   const titleGuess = titleFromSteamUrl(form.steamLink);
+  const generatedReport = createProjectReport({
+    title: form.title,
+    steamLink: form.steamLink,
+    workScope: form.workScope,
+    seed: form.reportSeed,
+  });
 
   const bannerCandidates = useMemo(
     () => bannerCandidatesFor({ customUrl: form.bg_url, appId }),
@@ -196,6 +207,14 @@ export default function ProjectFormModal({ project, reviews, onSave, onCancel, o
     });
   };
 
+  const toggleWorkArea = (areaId) => {
+    patch({
+      workScope: form.workScope.includes(areaId)
+        ? form.workScope.filter((id) => id !== areaId)
+        : [...form.workScope, areaId],
+    });
+  };
+
   const submit = async (event) => {
     event.preventDefault();
     if (!form.title.trim()) {
@@ -203,10 +222,19 @@ export default function ProjectFormModal({ project, reviews, onSave, onCancel, o
       setError(message);
       return onError(message);
     }
+    if (!form.workScope.length && !form.details.trim() && !project) {
+      const message = 'Select at least one completed work area to generate the project report.';
+      setError(message);
+      return onError(message);
+    }
     setError('');
     setSaving(true);
     try {
-      await onSave(form);
+      const legacyDetails = project && !(project.workScope || []).length ? form.details : '';
+      await onSave({
+        ...form,
+        details: generatedReport || legacyDetails,
+      });
     } finally {
       setSaving(false);
     }
@@ -308,7 +336,7 @@ export default function ProjectFormModal({ project, reviews, onSave, onCancel, o
                   )}
 
                   {steamLinkBroken && (
-                    <span className="mt-2 inline-flex items-start gap-1.5 rounded-lg border border-amber-500/40 bg-amber-500/10 px-2.5 py-1.5 text-caption font-medium text-amber-200">
+                    <span className="mt-2 inline-flex items-start gap-1.5 rounded-lg border border-amber-700/20 bg-amber-50 px-2.5 py-1.5 text-caption font-medium text-amber-800">
                       <svg
                         viewBox="0 0 24 24"
                         aria-hidden="true"
@@ -360,16 +388,56 @@ export default function ProjectFormModal({ project, reviews, onSave, onCancel, o
               </div>
             </Section>
 
-            <Section title="Details">
+            <Section title="Work completed" hint={`${form.workScope.length} selected`}>
               <div className="space-y-4">
-                <Field label="Translation details">
-                  <textarea
-                    value={form.details}
-                    onChange={(event) => patch({ details: event.target.value })}
-                    className="form-input h-20"
-                  />
-                </Field>
+                <p className="text-caption text-muted">
+                  Choose the work completed for this project. The site will generate a concise,
+                  project-specific report from your selections.
+                </p>
 
+                <div className="grid gap-2 sm:grid-cols-2">
+                  {WORK_AREAS.map((area) => (
+                    <label
+                      key={area.id}
+                      className="flex cursor-pointer items-start gap-2.5 rounded-lg border border-line bg-surface-2/40 px-3 py-2.5 text-caption font-medium text-muted transition-colors duration-250 ease-expo hover:border-line-strong hover:text-ink"
+                    >
+                      <input
+                        type="checkbox"
+                        checked={form.workScope.includes(area.id)}
+                        onChange={() => toggleWorkArea(area.id)}
+                        className="mt-0.5 h-4 w-4 shrink-0 rounded accent-accent"
+                      />
+                      <span>{area.label}</span>
+                    </label>
+                  ))}
+                </div>
+
+                {generatedReport ? (
+                  <div
+                    aria-live="polite"
+                    className="rounded-lg border border-accent/20 bg-accent/[0.05] p-4"
+                  >
+                    <p className="text-caption font-semibold text-accent">Generated report</p>
+                    <p className="mt-2 text-body text-ink">{generatedReport}</p>
+                  </div>
+                ) : form.details ? (
+                  <div className="rounded-lg border border-line bg-surface-2/50 p-4">
+                    <p className="text-caption font-semibold text-muted">Current project description</p>
+                    <p className="mt-2 text-body text-muted">{form.details}</p>
+                    <p className="mt-2 text-caption text-faint">
+                      This older description will stay as-is until you select completed work areas.
+                    </p>
+                  </div>
+                ) : (
+                  <p className="text-caption text-faint">
+                    Select at least one area to create the report.
+                  </p>
+                )}
+              </div>
+            </Section>
+
+            <Section title="Project options">
+              <div className="space-y-4">
                 <label className="flex cursor-pointer select-none items-center gap-3 rounded-lg border border-line bg-surface-2/40 px-3 py-2.5 text-caption font-medium text-muted transition-colors duration-250 ease-expo hover:border-line-strong hover:text-ink">
                   <input
                     type="checkbox"
@@ -446,7 +514,7 @@ export default function ProjectFormModal({ project, reviews, onSave, onCancel, o
                 ) : appId ? (
                   <span className="chip">FROM STEAM</span>
                 ) : (
-                  <span className="chip border-amber-500/40 bg-amber-500/10 text-amber-300">
+                  <span className="chip border-amber-700/20 bg-amber-50 text-amber-800">
                     NO ARTWORK
                   </span>
                 )}
@@ -467,7 +535,7 @@ export default function ProjectFormModal({ project, reviews, onSave, onCancel, o
                   }}
                 />
 
-                <div className="absolute inset-0 bg-gradient-to-t from-void via-void/70 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/25 to-transparent" />
 
                 <div className="relative z-10 flex h-full flex-col justify-end p-3">
                   <SteamImage
@@ -482,7 +550,7 @@ export default function ProjectFormModal({ project, reviews, onSave, onCancel, o
                     }}
                   />
 
-                  <h3 className="truncate font-display text-body-lg font-semibold leading-tight text-ink">
+                  <h3 className="truncate font-display text-body-lg font-semibold leading-tight text-white drop-shadow">
                     {form.title || 'Project title'}
                   </h3>
                 </div>
@@ -496,7 +564,7 @@ export default function ProjectFormModal({ project, reviews, onSave, onCancel, o
                       {resolvedBanner.split('/').pop()}
                     </span>
                   ) : (
-                    <span className="text-amber-300">none - upload one</span>
+                    <span className="text-amber-800">none - upload one</span>
                   )}
                 </li>
 
@@ -507,7 +575,7 @@ export default function ProjectFormModal({ project, reviews, onSave, onCancel, o
                       {resolvedLogo.split('/').pop()}
                     </span>
                   ) : (
-                    <span className="text-amber-300">none - title text is used</span>
+                    <span className="text-amber-800">none - title text is used</span>
                   )}
                 </li>
               </ul>

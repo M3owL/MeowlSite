@@ -57,13 +57,10 @@ export const ABOUT = {
   languagePairs: [{ from: 'English', to: 'Polish', primary: true }],
 };
 
-/** `live: 'projects'` is filled in from the database at runtime. */
+/** Public impact figures are edited from the admin panel and stored in Supabase. */
 export const STATS = [
-  { id: 'projects', label: 'Projects delivered', value: 0, suffix: '+', live: 'projects' },
-  // PLACEHOLDER -- replace with a real number or remove the tile.
-  { id: 'words', label: 'Words translated', value: 50000, suffix: '+', live: null },
-  // Started in 2026. Keep this honest and specific -- do not inflate it.
-  { id: 'experience', label: 'Experience', value: 6, suffix: ' months+', live: null },
+  { id: 'completedProjects', label: 'Projects completed', suffix: '+' },
+  { id: 'translatedWords', label: 'Words translated', suffix: '+' },
 ];
 
 // --------------------------------------------------------------- services

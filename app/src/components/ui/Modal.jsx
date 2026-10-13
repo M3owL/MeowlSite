@@ -146,7 +146,7 @@ export default function Modal({
 
   return (
     <div
-      className={`fixed inset-0 z-[200] overflow-y-auto bg-black/80 backdrop-blur-sm transition-opacity duration-250 ease-expo ${
+      className={`fixed inset-0 z-[200] overflow-y-auto bg-ink/45 backdrop-blur-sm transition-opacity duration-250 ease-expo ${
         entered && !closing ? 'opacity-100' : 'opacity-0'
       }`}
     >

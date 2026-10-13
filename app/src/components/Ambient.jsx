@@ -29,7 +29,7 @@ export default function Ambient() {
           left: '-10rem',
           width: '42rem',
           height: '42rem',
-          background: 'radial-gradient(circle, rgba(6,182,212,0.28), transparent 70%)',
+          background: 'radial-gradient(circle, rgba(22,120,111,0.08), transparent 70%)',
         }}
       />
 
@@ -40,7 +40,7 @@ export default function Ambient() {
           right: '-14rem',
           width: '38rem',
           height: '38rem',
-          background: 'radial-gradient(circle, rgba(99,102,241,0.22), transparent 70%)',
+          background: 'radial-gradient(circle, rgba(22,120,111,0.04), transparent 70%)',
         }}
       />
 
@@ -51,7 +51,7 @@ export default function Ambient() {
           left: '30%',
           width: '34rem',
           height: '34rem',
-          background: 'radial-gradient(circle, rgba(6,182,212,0.14), transparent 70%)',
+          background: 'radial-gradient(circle, rgba(22,120,111,0.035), transparent 70%)',
         }}
       />
 

@@ -73,11 +73,11 @@ export default function RatingEditor({ ratings, onChange }) {
                 onChange={(event) => update(index, { value: parseFloat(event.target.value) })}
                 aria-label={`${rating.category} score`}
                 className="h-1.5 w-full flex-1 cursor-pointer appearance-none rounded-full
-                           bg-white/10 accent-accent"
+                           bg-ink/10 accent-accent"
               />
 
               <div className="flex items-center justify-between gap-3 sm:w-32 sm:justify-end">
-                <span className="font-mono text-caption font-semibold text-amber-400">
+                <span className="font-mono text-caption font-semibold text-amber-700">
                   {Number(rating.value).toFixed(1)}
                 </span>
                 <Stars value={rating.value} size="xs" />
@@ -87,7 +87,7 @@ export default function RatingEditor({ ratings, onChange }) {
                   onClick={() => onChange(ratings.filter((_, i) => i !== index))}
                   aria-label={`Remove ${rating.category}`}
                   className="rounded-md p-1.5 text-faint transition-colors duration-250 ease-expo
-                             hover:bg-red-500/10 hover:text-red-400"
+                             hover:bg-red-50 hover:text-red-700"
                 >
                   <svg
                     width="16"

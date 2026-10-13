@@ -36,7 +36,7 @@
 
     --shell-h: 72px;
 
-    color-scheme: dark;
+    color-scheme: light;
   }
 
   html {
@@ -71,8 +71,8 @@
   }
 
   ::selection {
-    background: rgba(6, 182, 212, 0.3);
-    color: #e8f1f7;
+    background: rgba(22, 120, 111, 0.18);
+    color: #1d2b27;
   }
 
   ::-webkit-scrollbar {
@@ -81,17 +81,17 @@
   }
 
   ::-webkit-scrollbar-track {
-    background: #04070d;
+    background: #e6ece9;
   }
 
   ::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.1);
-    border: 2px solid #04070d;
+    background: rgba(29, 43, 39, 0.18);
+    border: 2px solid #e6ece9;
     border-radius: 99px;
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    background: rgba(6, 182, 212, 0.45);
+    background: rgba(22, 120, 111, 0.48);
   }
 
   /* Images never overflow their frame. */
@@ -106,10 +106,10 @@
   /* ------------------------------------------------------------- surfaces */
 
   .glass {
-    background: linear-gradient(180deg, rgba(16, 26, 38, 0.72), rgba(10, 16, 24, 0.82));
-    backdrop-filter: blur(14px) saturate(140%);
-    -webkit-backdrop-filter: blur(14px) saturate(140%);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.94);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(24, 50, 43, 0.09);
   }
 
   .card {
@@ -156,8 +156,8 @@
   }
 
   .btn-danger {
-    @apply btn border border-red-500/30 bg-red-500/10 px-3 py-1.5 text-caption text-red-300
-           hover:bg-red-500/20;
+    @apply btn border border-red-700/20 bg-red-50 px-3 py-1.5 text-caption text-red-700
+           hover:bg-red-100;
   }
 
   .btn-sm {
@@ -251,11 +251,11 @@
     inset: 0;
     transform: translateX(-100%);
     animation: shimmer 1.6s ease-in-out infinite;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.07), transparent);
+    background: linear-gradient(90deg, transparent, rgba(24, 50, 43, 0.06), transparent);
   }
 
   .bar-track {
-    @apply h-1.5 w-full overflow-hidden rounded-full bg-white/[0.07];
+    @apply h-1.5 w-full overflow-hidden rounded-full bg-ink/[0.08];
   }
 
   .bar-fill {
@@ -282,12 +282,15 @@
 
   .ambient {
     @apply pointer-events-none fixed inset-0 -z-10 overflow-hidden;
+    background:
+      radial-gradient(ellipse 64% 48% at 50% -10%, rgba(22, 120, 111, 0.08), transparent 75%),
+      #f6f8f7;
   }
 
   .aurora-blob {
     position: absolute;
     border-radius: 9999px;
-    filter: blur(90px);
+    filter: blur(120px);
     will-change: transform;
   }
 
@@ -297,7 +300,7 @@
     inset: 0;
     z-index: 1;
     pointer-events: none;
-    opacity: 0.035;
+    opacity: 0.012;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E");
   }
 }
@@ -382,7 +385,7 @@
     transition: opacity var(--dur-250) var(--ease-expo);
     background: radial-gradient(
       220px circle at var(--mx, 50%) var(--my, 50%),
-      rgba(255, 255, 255, 0.14),
+      rgba(22, 120, 111, 0.07),
       transparent 65%
     );
   }
