@@ -284,12 +284,25 @@ export default function ContactTab({ onToast }) {
               </div>
 
               {channel.href ? (
-                <a
-                  href={channel.href}
-                  className="mt-5 break-all font-display text-h4 font-semibold text-ink transition-colors duration-250 ease-expo hover:text-accent"
-                >
-                  {channel.value}
-                </a>
+                <>
+                  <a
+                    href={channel.href}
+                    className="mt-5 break-all font-display text-h4 font-semibold text-ink transition-colors duration-250 ease-expo hover:text-accent"
+                  >
+                    {channel.value}
+                  </a>
+                  {channel.id === 'email' && (
+                    <div className="mt-5 border-t border-line pt-4">
+                      <p className="text-caption text-faint">Alternative email</p>
+                      <a
+                        href={`mailto:${CONTACT.alternateEmail}`}
+                        className="mt-1 block break-all text-body text-muted transition-colors duration-250 ease-expo hover:text-accent"
+                      >
+                        {CONTACT.alternateEmail}
+                      </a>
+                    </div>
+                  )}
+                </>
               ) : (
                 <>
                   <span className="mt-5 break-all font-display text-h4 font-semibold text-ink">

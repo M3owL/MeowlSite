@@ -1,4 +1,4 @@
-import { BRAND, NAV_TABS } from '../lib/constants';
+import { BRAND, CONTACT, NAV_TABS } from '../lib/constants';
 
 function scrollBehavior() {
   if (typeof window === 'undefined' || !window.matchMedia) return 'auto';
@@ -21,6 +21,9 @@ export default function Footer({ onNavigate }) {
             <a href={`mailto:${BRAND.email}`} className="mt-7 inline-flex items-center gap-2 font-display text-h4 text-accent transition-colors hover:text-accent-2">
               {BRAND.email}<span aria-hidden="true">↗</span>
             </a>
+            <p className="mt-3 text-caption text-faint">
+              Alternative email: <a href={`mailto:${CONTACT.alternateEmail}`} className="text-muted transition-colors hover:text-accent">{CONTACT.alternateEmail}</a>
+            </p>
           </div>
           <div className="lg:justify-self-end">
             <p className="font-display text-h3 text-ink">{BRAND.name}</p>

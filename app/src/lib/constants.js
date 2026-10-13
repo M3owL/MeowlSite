@@ -192,6 +192,7 @@ export const CONTACT = {
   heading: 'Got a build that needs Polish?',
   intro:
     'Send me the files, the deadline and a rough word count. You will get a fixed quote and a date, not a request for a call.',
+  alternateEmail: 'meowl.translation@gmail.com',
   channels: [
     { id: 'email', label: 'Email', value: 'jacob@polishforgames.com', href: 'mailto:jacob@polishforgames.com' },
     { id: 'discord', label: 'Discord', value: '_m3owl', href: null },
