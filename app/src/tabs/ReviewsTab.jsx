@@ -101,6 +101,7 @@ export default function ReviewsTab({ reviews, isAdmin, openCodeModal }) {
         <div>
           <p className="eyebrow">Reviews</p>
           <h2 className="mt-2 text-h1">What clients say</h2>
+          <p className="lead mt-4 max-w-2xl">Feedback from people I have worked with, in their own words.</p>
         </div>
 
         {!isAdmin && (

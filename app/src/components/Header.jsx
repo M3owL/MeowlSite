@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { BRAND, NAV_TABS } from '../lib/constants';
-import { useScrolledPast } from '../lib/motion';
 
 /**
  * The id of the element every tab controls. `App.jsx` owns that element.
@@ -30,8 +29,6 @@ function scrollBehavior() {
  * fade appears on whichever edge still has content behind it.
  */
 export default function Header({ activeTab, onTabChange, isAdmin, onLogout }) {
-  const scrolled = useScrolledPast(8);
-
   const navRef = useRef(null);
   const tabRefs = useRef(new Map());
 
@@ -163,16 +160,8 @@ export default function Header({ activeTab, onTabChange, isAdmin, onLogout }) {
   const { open, label } = BRAND.availability;
 
   return (
-    <header
-      className={`sticky top-0 z-40 border-b bg-void/80 backdrop-blur-xl transition-all duration-400 ease-expo ${
-        scrolled ? 'border-line-strong shadow-e2' : 'border-line'
-      }`}
-    >
-      <div
-        className={`container-page flex flex-wrap items-center gap-x-4 gap-y-1.5 transition-all duration-400 ease-expo ${
-          scrolled ? 'py-1.5' : 'py-2.5 lg:py-3.5'
-        }`}
-      >
+    <header className="sticky top-0 z-40 border-b border-line bg-void/95 backdrop-blur-xl">
+      <div className="container-page flex flex-wrap items-center gap-x-4 gap-y-1.5 py-3 lg:min-h-[76px] lg:flex-nowrap">
         {/* ------------------------------------------------------------ brand */}
         <div className="order-1 flex min-w-0 items-center">
           <div className="min-w-0">
@@ -194,7 +183,7 @@ export default function Header({ activeTab, onTabChange, isAdmin, onLogout }) {
                 <span className="sr-only">{label}</span>
               </span>
 
-              <h1 className="truncate font-display text-h3 leading-tight text-ink">{BRAND.name}</h1>
+              <h1 className="truncate font-display text-h3 leading-tight tracking-tight text-ink">{BRAND.name}</h1>
             </div>
 
             <p className="hidden truncate text-caption text-faint sm:block">{BRAND.role}</p>
@@ -228,7 +217,7 @@ export default function Header({ activeTab, onTabChange, isAdmin, onLogout }) {
               */}
               <span
                 aria-hidden="true"
-                className="pointer-events-none absolute left-0 top-0 rounded-lg border border-accent/30 bg-accent/10 transition-[transform,width] duration-400 ease-expo"
+                className="pointer-events-none absolute left-0 top-0 rounded-lg border border-accent/25 bg-accent/10 transition-[transform,width] duration-250 ease-expo"
                 style={{
                   width: `${indicator.width}px`,
                   height: `${indicator.height}px`,

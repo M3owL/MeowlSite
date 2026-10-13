@@ -13,13 +13,13 @@ const COPY = {
   eyebrow: 'Services',
   heading: 'What I translate',
   intro:
-    'Everything below is EN to PL game text. Pick the piece you need, or hand me the whole build and I will take it from strings to store page.',
+    'English to Polish localization and proofreading for the text players actually see. Clear scope, considered language and a reliable handoff.',
   processEyebrow: 'Process',
   processHeading: 'How a project runs',
   samplesEyebrow: 'Samples',
-  samplesHeading: 'See it before you buy it',
+  samplesHeading: 'The choices behind the words',
   samplesIntro:
-    'The same way I would hand them to you: the English, the Polish, and why the Polish reads the way it does.',
+    'Illustrative lines show how meaning, rhythm and context guide each Polish line.',
 };
 
 /* ------------------------------------------------------------------ icons */
@@ -82,7 +82,7 @@ export default function ServicesTab({ onNavigate }) {
 
       {/* ---------------------------------------------------------- services */}
       <section aria-label={COPY.heading}>
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-5 sm:grid-cols-2">
           {SERVICES.map((service, index) => (
             <Reveal
               key={service.id}

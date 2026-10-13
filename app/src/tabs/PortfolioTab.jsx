@@ -130,7 +130,8 @@ export default function PortfolioTab({
       <header className="section-head">
         <div className="min-w-0">
           <p className="eyebrow mb-2">Selected work</p>
-          <h2 className="text-h1">Game Translation History</h2>
+          <h2 className="mt-3 text-display-2">Selected work</h2>
+          <p className="lead mt-4 max-w-2xl">A look at the games and language projects I have worked on.</p>
         </div>
 
         {isAdmin && (
@@ -148,7 +149,7 @@ export default function PortfolioTab({
       {sorted.length === 0 ? (
         <p className="py-16 text-center text-body-lg text-muted">No projects added yet.</p>
       ) : (
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
           {rows.map((row) => (
             <ProjectCard
               key={row.project.id}

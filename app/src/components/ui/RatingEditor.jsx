@@ -87,7 +87,7 @@ export default function RatingEditor({ ratings, onChange }) {
                   onClick={() => onChange(ratings.filter((_, i) => i !== index))}
                   aria-label={`Remove ${rating.category}`}
                   className="rounded-md p-1.5 text-faint transition-colors duration-250 ease-expo
-                             hover:bg-red-50 hover:text-red-700"
+                             hover:bg-red-400/20 hover:text-red-300"
                 >
                   <svg
                     width="16"

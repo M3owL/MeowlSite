@@ -266,7 +266,7 @@ export default function AdminTab({
                     onClick={() => revokeCode(item.id)}
                     title="Revoke"
                     aria-label={`Revoke code ${item.code}`}
-                    className="btn-quiet shrink-0 text-red-700 hover:bg-red-50 hover:text-red-800"
+                    className="btn-quiet shrink-0 text-red-300 hover:bg-red-400/20 hover:text-red-200"
                   >
                     <IconTrash />
                   </button>

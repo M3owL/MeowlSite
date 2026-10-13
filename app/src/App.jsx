@@ -18,7 +18,7 @@ import ProjectFormModal from './modals/ProjectFormModal';
 import { getSupabase, describeError } from './lib/supabase';
 import { normalizeProject, normalizeReview, normalizeCode } from './lib/normalize';
 import { DEFAULT_TAB, TOAST_MS } from './lib/constants';
-import { useScrollProgress, useTabTransition } from './lib/motion';
+import { useTabTransition } from './lib/motion';
 
 const EMPTY_MODAL = { type: null, data: null };
 const EMPTY_METRICS = { completedProjects: 0, translatedWords: 0 };
@@ -41,8 +41,6 @@ export default function App() {
    * incoming one. `renderedTab` lags `activeTab` by the exit duration.
    */
   const { rendered: renderedTab, phase } = useTabTransition(activeTab);
-
-  const scrollProgress = useScrollProgress();
 
   /**
    * Realtime callbacks are registered once and live outside the render cycle,
@@ -381,12 +379,6 @@ export default function App() {
 
       <Ambient />
 
-      <div
-        aria-hidden="true"
-        className="fixed inset-x-0 top-0 z-50 h-0.5 origin-left bg-gradient-to-r from-accent-3 via-accent to-accent-2"
-        style={{ transform: `scaleX(${scrollProgress})` }}
-      />
-
       <Header
         activeTab={activeTab}
         onTabChange={setActiveTab}
@@ -394,7 +386,7 @@ export default function App() {
         onLogout={logout}
       />
 
-      <main id="main" className="relative z-10 flex-grow pb-16 pt-8 sm:pt-12">
+      <main id="main" className="relative z-10 flex-grow pb-20 pt-8 sm:pt-12">
         <div className="container-page">
           <ErrorBanner message={error} onDismiss={() => setError('')} />
 

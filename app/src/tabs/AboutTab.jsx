@@ -1,199 +1,116 @@
-import { ABOUT, BRAND, CONTACT, STATS } from '../lib/constants';
+import { ABOUT, BRAND, CONTACT, SAMPLES, STATS } from '../lib/constants';
 import Reveal from '../components/ui/Reveal';
 import { useCountUp, useInView } from '../lib/motion';
 
-/**
- * Landing page. `DEFAULT_TAB` is 'about', so this is the first thing a visitor
- * sees: hero, numbers, bio, toolkit, closing CTA.
- *
- * Deliberately plain. An earlier pass dressed every block in its own bordered
- * panel and split the bio across three mismatched boxes, which read as
- * decoration rather than information. The bio is prose now, in one column.
- *
- * All editorial copy comes from `lib/constants.js`. The few structural labels
- * this component needs are declared in `COPY` below.
- */
-const COPY = {
-  getQuote: 'Get a quote',
-  seeWork: 'See the work',
-  statsEyebrow: 'At a glance',
-  bioHeading: 'About me',
-};
-
-/* ------------------------------------------------------------------ icons */
-
-function ArrowRight({ className = 'h-4 w-4' }) {
+function ArrowRight() {
   return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.75"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className={className}
-      aria-hidden="true"
-      focusable="false"
-    >
-      <path d="M4 12h15" />
-      <path d="m13 6 6 6-6 6" />
+    <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M4 12h16m-6-6 6 6-6 6" />
     </svg>
   );
 }
 
-function AvailabilityDot({ open }) {
-  return (
-    <span className="relative flex h-2.5 w-2.5 shrink-0">
-      {open ? (
-        <span className="absolute inline-flex h-full w-full animate-pulse-ring rounded-full bg-emerald-400" />
-      ) : null}
-      <span
-        className={`relative inline-flex h-2.5 w-2.5 rounded-full ${
-          open ? 'bg-emerald-400' : 'bg-faint'
-        }`}
-      />
-    </span>
-  );
-}
-
-/* ------------------------------------------------------------------ stats */
-
-/** Counts up once the row is on screen. Must be its own component -- hooks. */
 function StatValue({ value, suffix, active }) {
   const count = useCountUp(value, active);
-
-  return (
-    <span className="font-display text-h1 font-semibold leading-none text-ink">
-      {count.toLocaleString('en-US')}
-      {suffix ? <span className="text-accent">{suffix}</span> : null}
-    </span>
-  );
+  return <span className="font-display text-h1 font-semibold leading-none text-ink">{count.toLocaleString('en-US')}<span className="text-accent">{suffix}</span></span>;
 }
-
-/* ------------------------------------------------------------------- tab */
 
 export default function AboutTab({ metrics = {}, onNavigate }) {
   const [statsRef, statsInView] = useInView();
-
-  const stats = STATS.map((stat) => ({
-    ...stat,
-    value: Number(metrics[stat.id]) || 0,
-  })).filter((stat) => Number(stat.value) > 0);
+  const stats = STATS.map((stat) => ({ ...stat, value: Number(metrics[stat.id]) || 0 }))
+    .filter((stat) => stat.value > 0);
+  const sample = SAMPLES[0];
 
   return (
-    <div className="mx-auto max-w-6xl space-y-16 sm:space-y-20">
-      {/* ------------------------------------------------------------- hero */}
-      <section className="relative max-w-5xl">
-        <Reveal index={0} className="flex flex-wrap items-center gap-x-3 gap-y-2">
-          <span className="eyebrow">{BRAND.role}</span>
-          <span aria-hidden="true" className="hidden h-3 w-px bg-line-strong sm:block" />
-          <span className="meta">{ABOUT.focus}</span>
-          <span aria-hidden="true" className="hidden h-3 w-px bg-line-strong sm:block" />
-          <span className="meta">{BRAND.location}</span>
-        </Reveal>
+    <div className="mx-auto max-w-6xl">
+      <section className="hero-layout" aria-labelledby="hero-heading">
+        <div className="hero-copy">
+          <div className="hero-kicker">
+            <span className="hero-kicker-line" />
+            <span>{BRAND.role}</span>
+            <span className="text-faint">/ {BRAND.location}</span>
+          </div>
 
-        <Reveal as="h2" index={1} className="mt-6 max-w-4xl text-display-2 text-ink sm:mt-8">
-          {ABOUT.heading}
-        </Reveal>
+          <h2 id="hero-heading" className="hero-title">
+            Words that<br />
+            <span className="hero-title-accent">feel at home.</span>
+          </h2>
+          <p className="hero-subtitle">{ABOUT.heading}</p>
+          <p className="lead mt-5 max-w-xl">{ABOUT.intro}</p>
 
-        <Reveal as="p" index={2} className="lead mt-5 max-w-2xl sm:mt-6">
-          {ABOUT.intro}
-        </Reveal>
+          <div className="mt-7 flex flex-wrap items-center gap-x-5 gap-y-3 text-caption">
+            <span className="inline-flex items-center gap-2 text-ink"><span className="h-1.5 w-1.5 rounded-full bg-accent" /> English → Polish</span>
+            <span className="text-faint">{ABOUT.focus}</span>
+          </div>
 
-        <Reveal index={3} className="mt-6 flex flex-wrap items-center gap-x-3 gap-y-2">
-          {ABOUT.languagePairs.map((pair, index) => (
-            <span key={`${pair.from}-${pair.to}`} className="flex items-center gap-3">
-              {index > 0 ? (
-                <span aria-hidden="true" className="text-faint">
-                  ·
-                </span>
-              ) : null}
-              <span
-                className={`text-body ${
-                  pair.primary ? 'font-semibold text-ink' : 'text-muted'
-                }`}
-              >
-                {pair.from} → {pair.to}
-              </span>
-            </span>
-          ))}
-        </Reveal>
+          <div className="mt-9 flex flex-wrap gap-3">
+            <button type="button" className="btn-primary btn-lg" onClick={() => onNavigate?.('contact')}>
+              Discuss a project <ArrowRight />
+            </button>
+            <button type="button" className="btn-ghost btn-lg" onClick={() => onNavigate?.('portfolio')}>
+              Explore the work
+            </button>
+          </div>
+          <p className="mt-7 flex items-center gap-2 text-caption text-muted">
+            <span className="h-2 w-2 rounded-full bg-accent" />{BRAND.availability.label}
+          </p>
+        </div>
 
-        <Reveal index={4} className="mt-6 flex flex-wrap items-center gap-x-3 gap-y-2">
-          <AvailabilityDot open={BRAND.availability.open} />
-          <span className="text-caption font-semibold text-ink">{BRAND.availability.label}</span>
-          <span className="meta">{BRAND.availability.note}</span>
-        </Reveal>
-
-        <Reveal index={5} className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
-          <button
-            type="button"
-            className="btn-primary btn-lg"
-            onClick={() => onNavigate?.('contact')}
-          >
-            {COPY.getQuote}
-            <ArrowRight />
-          </button>
-          <button
-            type="button"
-            className="btn-ghost btn-lg"
-            onClick={() => onNavigate?.('portfolio')}
-          >
-            {COPY.seeWork}
-          </button>
-        </Reveal>
+        <aside className="hero-proof" aria-label="Illustrative translation sample">
+          <div className="flex items-center justify-between border-b border-line px-6 py-5 sm:px-8">
+            <span className="eyebrow">The craft in practice</span>
+            <span className="font-mono text-xs text-faint">EN / PL</span>
+          </div>
+          <div className="px-6 py-8 sm:px-8 sm:py-10">
+            <p className="font-mono text-xs uppercase tracking-widest text-faint">Original · illustrative example</p>
+            <p className="mt-4 max-w-sm font-display text-xl leading-snug text-muted sm:text-2xl">“{sample.source}”</p>
+            <div className="my-8 flex items-center gap-4"><span className="h-px flex-1 bg-line-strong" /><span className="text-accent">↓</span><span className="h-px flex-1 bg-line-strong" /></div>
+            <p className="font-mono text-xs uppercase tracking-widest text-accent">Localized for Polish players</p>
+            <p className="mt-4 max-w-sm font-display text-2xl leading-snug text-ink sm:text-3xl">„{sample.target}”</p>
+          </div>
+          <div className="border-t border-line bg-surface-2/40 px-6 py-5 sm:px-8">
+            <p className="text-caption leading-relaxed text-muted">A translation should sound like it belongs in the world of the game.</p>
+          </div>
+        </aside>
       </section>
 
-      {/* ------------------------------------------------------------ stats */}
-      {stats.length > 0 ? (
-        <section ref={statsRef} aria-labelledby="about-stats">
-          <Reveal as="h2" id="about-stats" className="eyebrow">
-            {COPY.statsEyebrow}
-          </Reveal>
+      <div className="hero-bottom-rule" aria-hidden="true"><span>Language is part of the experience.</span><span>01 / 03</span></div>
 
-          {/* Two published figures get equal space and a quiet divider. */}
-          <div className="mt-5 grid grid-cols-1 border-y border-line sm:grid-cols-2">
+      {stats.length > 0 && (
+        <section ref={statsRef} className="mt-20 sm:mt-28" aria-labelledby="about-stats">
+          <Reveal as="h2" id="about-stats" className="eyebrow">At a glance</Reveal>
+          <div className="mt-6 grid grid-cols-1 divide-y divide-line border-y border-line sm:grid-cols-2 sm:divide-x sm:divide-y-0">
             {stats.map((stat, index) => (
-              <Reveal
-                key={stat.id}
-                index={index}
-                className={`py-6 sm:py-7 ${index === 0 && stats.length > 1 ? 'border-b border-line sm:border-b-0 sm:border-r sm:pr-8' : ''} ${index > 0 ? 'sm:pl-8' : ''}`}
-              >
+              <Reveal key={stat.id} index={index} className="py-7 sm:px-8 sm:py-9 first:pl-0">
                 <StatValue value={stat.value} suffix={stat.suffix} active={statsInView} />
-                <span className="meta mt-2.5 block">{stat.label}</span>
+                <span className="meta mt-3 block">{stat.label}</span>
               </Reveal>
             ))}
           </div>
         </section>
-      ) : null}
+      )}
 
-      {/* -------------------------------------------------------------- bio */}
-      <section aria-labelledby="about-bio">
-        <Reveal as="h2" id="about-bio" className="text-h2">
-          {COPY.bioHeading}
-        </Reveal>
-
-        <div className="mt-6 max-w-2xl space-y-5">
+      <section className="about-editorial" aria-labelledby="about-bio">
+        <div>
+          <Reveal as="p" className="eyebrow">A little about me</Reveal>
+          <Reveal as="h2" id="about-bio" className="mt-4 max-w-md text-display-2">A precise voice for a new world.</Reveal>
+          <Reveal as="p" className="mt-6 max-w-md text-body text-faint">{BRAND.name} · {BRAND.role}</Reveal>
+        </div>
+        <div className="space-y-6 border-l border-line-strong pl-6 sm:pl-10">
           {ABOUT.body.map((paragraph, index) => (
-            <Reveal as="p" key={paragraph} index={index} className="text-body-lg text-muted">
-              {paragraph}
-            </Reveal>
+            <Reveal as="p" key={paragraph} index={index} className="text-body-lg text-muted">{paragraph}</Reveal>
           ))}
         </div>
       </section>
 
-      {/* -------------------------------------------------------- closing cta */}
-      <Reveal className="rounded-2xl border border-line bg-white p-7 shadow-e1 sm:p-10">
-        <h2 className="max-w-2xl text-h1">{CONTACT.heading}</h2>
-        <p className="lead mt-4 max-w-xl">{CONTACT.intro}</p>
-
-        <button
-          type="button"
-          className="btn-primary btn-lg mt-8"
-          onClick={() => onNavigate?.('contact')}
-        >
-          {COPY.getQuote}
-          <ArrowRight />
+      <Reveal as="section" className="closing-panel" aria-labelledby="about-cta">
+        <div>
+          <p className="eyebrow">Next step</p>
+          <h2 id="about-cta" className="mt-4 max-w-2xl text-display-2">{CONTACT.heading}</h2>
+          <p className="lead mt-4 max-w-xl">{CONTACT.intro}</p>
+        </div>
+        <button type="button" className="btn-primary btn-lg mt-8 shrink-0 lg:mt-0" onClick={() => onNavigate?.('contact')}>
+          Get in touch <ArrowRight />
         </button>
       </Reveal>
     </div>

@@ -31,12 +31,12 @@ function ErrorNote({ children }) {
   return (
     <div
       role="alert"
-      className="flex items-start gap-2.5 rounded-lg border border-red-700/20 bg-red-50 px-3 py-2.5 text-caption text-red-800"
+      className="flex items-start gap-2.5 rounded-lg border border-red-400/30 bg-red-400/10 px-3 py-2.5 text-caption text-red-200"
     >
       <svg
         viewBox="0 0 24 24"
         aria-hidden="true"
-        className="mt-px h-4 w-4 shrink-0 text-red-600"
+        className="mt-px h-4 w-4 shrink-0 text-red-300"
         fill="none"
         stroke="currentColor"
         strokeWidth="2"
@@ -336,7 +336,7 @@ export default function ProjectFormModal({ project, reviews, onSave, onCancel, o
                   )}
 
                   {steamLinkBroken && (
-                    <span className="mt-2 inline-flex items-start gap-1.5 rounded-lg border border-amber-700/20 bg-amber-50 px-2.5 py-1.5 text-caption font-medium text-amber-800">
+                    <span className="mt-2 inline-flex items-start gap-1.5 rounded-lg border border-amber-300/25 bg-amber-300/10 px-2.5 py-1.5 text-caption font-medium text-amber-200">
                       <svg
                         viewBox="0 0 24 24"
                         aria-hidden="true"
@@ -514,7 +514,7 @@ export default function ProjectFormModal({ project, reviews, onSave, onCancel, o
                 ) : appId ? (
                   <span className="chip">FROM STEAM</span>
                 ) : (
-                  <span className="chip border-amber-700/20 bg-amber-50 text-amber-800">
+                  <span className="chip border-amber-300/25 bg-amber-300/10 text-amber-200">
                     NO ARTWORK
                   </span>
                 )}
@@ -564,7 +564,7 @@ export default function ProjectFormModal({ project, reviews, onSave, onCancel, o
                       {resolvedBanner.split('/').pop()}
                     </span>
                   ) : (
-                    <span className="text-amber-800">none - upload one</span>
+                    <span className="text-amber-200">none - upload one</span>
                   )}
                 </li>
 
@@ -575,7 +575,7 @@ export default function ProjectFormModal({ project, reviews, onSave, onCancel, o
                       {resolvedLogo.split('/').pop()}
                     </span>
                   ) : (
-                    <span className="text-amber-800">none - title text is used</span>
+                    <span className="text-amber-200">none - title text is used</span>
                   )}
                 </li>
               </ul>
