@@ -45,7 +45,7 @@ export const ABOUT = {
     'English to Polish game localization and proofreading. Nothing should read like a translation.',
   focus: 'Indie & mid-size games',
   body: [
-    'I am a Polish game translator working from English into Polish. I started taking on projects in 2026 and I work with indie and mid-size studios.',
+    'I am a Polish game translator working from English into Polish. I started working as a translator in late 2025 and I work with indie and mid-size studios.',
     'My work covers in-game text, UI strings, dialogue and subtitles, plus proofreading of Polish text that already exists. I keep a glossary for every project so terminology stays consistent across patches and DLC, and I flag anything in the English source that will not survive a literal translation.',
     'Send me the files, the word count and the deadline, and you get a fixed price and a delivery date back. The portfolio shows what the work looks like in practice.',
   ],
@@ -163,10 +163,10 @@ export const RATE_NOTES = {
 export const SAMPLES = [
   {
     id: 'ui',
-    label: 'UI string',
-    source: 'The forge is cold. Light it before you leave.',
-    target: 'Kuźnia wygasła. Rozpal ją, zanim wyruszysz.',
-    note: 'Literal Polish would be "Kowadło jest zimne" — but a forge is not a person, and "wygasła" is what a Polish player actually says about a dead fire. "Before you leave" became "before you set out", which is how the game talks everywhere else.',
+    label: 'Quest hint',
+    source: 'The trail goes cold at the river. Look for another way across.',
+    target: 'Nad rzeką ślad się urywa. Poszukaj innej przeprawy.',
+    note: 'A literal rendering of "the trail goes cold" would sound unnatural in Polish. "Ślad się urywa" conveys that it can no longer be followed, while "przeprawa" keeps the objective short and clear.',
   },
   {
     id: 'dialogue',
