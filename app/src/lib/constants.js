@@ -65,24 +65,33 @@ export const STATS = [
 
 // --------------------------------------------------------------- services
 
-/**
- * Two services, because those are the two the owner actually offers. An
- * earlier version listed six -- LQA, voice-over scripts, store copy, glossary
- * setup -- which were plausible for a localizer but not things he does, and
- * every extra one is a claim to defend in the first client call.
- */
+/** The supported work, split into the kinds of text a client may need help with. */
 export const SERVICES = [
   {
-    id: 'localization',
-    title: 'Game localization',
-    summary: 'English to Polish, for everything the player reads.',
+    id: 'narrative',
+    title: 'Narrative & world text',
+    summary: 'Quest logs, item descriptions and story text.',
     detail:
-      'In-game text, UI strings, dialogue, item descriptions, quest logs and subtitles. Written so a Polish player reads it as Polish rather than as a translation, with variables and markup left untouched.',
+      'English to Polish text that gives the game its voice. Terminology stays consistent across the world, with the meaning and tone intact.',
+  },
+  {
+    id: 'dialogue',
+    title: 'Dialogue & subtitles',
+    summary: 'Lines that sound natural when a character says them.',
+    detail:
+      'Character dialogue and subtitles adapted for Polish rhythm, register and context while keeping each speaker recognizable.',
+  },
+  {
+    id: 'interface',
+    title: 'UI & gameplay text',
+    summary: 'Menus, prompts and the small words players rely on.',
+    detail:
+      'Clear Polish for interface strings and in-game instructions, with variables and markup preserved and terms kept consistent.',
   },
   {
     id: 'proofreading',
-    title: 'Proofreading',
-    summary: 'A second pass over Polish text that already exists.',
+    title: 'Polish proofreading',
+    summary: 'A second pass over text you already have.',
     detail:
       'Checking a translation for accuracy, consistency and natural phrasing — whether it came from another translator, from a machine, or from an earlier patch. You get the corrected text back, plus a note on anything that needed a judgement call.',
   },

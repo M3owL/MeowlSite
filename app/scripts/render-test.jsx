@@ -418,13 +418,24 @@ expect(
 
 // --------------------------------------------------- new in the redesign
 
+const services = render('ServicesTab', <ServicesTab onNavigate={noop} />);
 expect(
-  'services tab covers services, process and rates',
-  render('ServicesTab', <ServicesTab onNavigate={noop} />),
-  'Proofreading',
+  'services tab shows its supported work, process and rates',
+  services,
+  'Narrative &amp; world text',
+  'Dialogue &amp; subtitles',
+  'UI &amp; gameplay text',
+  'Polish proofreading',
+  '$0.015',
   'Brief',
   'Request a quote',
 );
+if (services.indexOf('Rates at a glance') < services.indexOf('What I work on')) {
+  passed += 1;
+} else {
+  failed += 1;
+  console.error('FAIL  visitors should see rates before the detailed service list');
+}
 expect(
   'contact tab exposes the real channels',
   render('ContactTab', <ContactTab onToast={noop} />),
