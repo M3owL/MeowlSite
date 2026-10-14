@@ -16,6 +16,7 @@ import ProjectCard from '../src/components/ProjectCard';
 import ProjectIndexItem from '../src/components/ProjectIndexItem';
 import ReviewCard from '../src/components/ReviewCard';
 import PinnedReviews from '../src/components/PinnedReviews';
+import SampleTranslation from '../src/components/SampleTranslation';
 import AboutTab from '../src/tabs/AboutTab';
 import ServicesTab from '../src/tabs/ServicesTab';
 import PortfolioTab from '../src/tabs/PortfolioTab';
@@ -425,6 +426,26 @@ expect(
 
 expect('about tab', render('AboutTab', <AboutTab />), 'Polish Game Translator');
 expect('services show LQA price and minimum', render('ServicesTab', <ServicesTab onNavigate={noop} />), 'Linguistic QA (LQA)', '$18', 'per hour', 'Minimum 1 hour');
+expect(
+  'translation sample shows source and finished Polish',
+  render('SampleTranslation translation', <SampleTranslation />),
+  'Original · English',
+  'Translated · Polish',
+  'The guards change shifts at dawn.',
+  'O świcie zmienia się warta.',
+);
+expect(
+  'proofreading sample marks machine draft and correction',
+  render('SampleTranslation proofreading', <SampleTranslation initialSampleId="proofreading" />),
+  'Machine translation · Polish',
+  'After proofreading · Polish',
+  '<del',
+  'jest na naszych piętach',
+  '<ins',
+  'depcze nam po piętach',
+  'Ruszaj',
+  'What changed',
+);
 expect(
   'pinned reviews strip',
   render('PinnedReviews', <PinnedReviews reviews={[review]} />),

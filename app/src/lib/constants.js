@@ -170,25 +170,36 @@ export const RATE_NOTES = {
 
 // ------------------------------------------------------------- samples
 
-/**
- * PLACEHOLDER -- the source lines below are written for the demo and are not
- * taken from any client project, so there is nothing here under NDA. Replace
- * with real excerpts (or keep invented ones) as you prefer.
- */
+/** Illustrative examples written for this site; the machine draft is simulated. */
 export const SAMPLES = [
   {
-    id: 'ui',
-    label: 'Quest hint',
-    source: 'The trail goes cold at the river. Look for another way across.',
-    target: 'Nad rzeką ślad się urywa. Poszukaj innej przeprawy.',
-    note: 'A literal rendering of "the trail goes cold" would sound unnatural in Polish. "Ślad się urywa" conveys that it can no longer be followed, while "przeprawa" keeps the objective short and clear.',
+    id: 'translation',
+    label: 'Translation',
+    source: 'The guards change shifts at dawn. Until then, stay out of sight.',
+    target: 'O świcie zmienia się warta. Do tego czasu nie daj się zauważyć.',
   },
   {
-    id: 'dialogue',
-    label: 'Dialogue',
-    source: "You're not from around here, are you? Don't answer that.",
-    target: 'Nie jesteś stąd, prawda? Nie, nie odpowiadaj.',
-    note: 'The English beats around the bush with a question and then retracts it. Polish handles that beat with a flat "prawda?" and a repeated "nie" — the hesitation survives, and it still fits in the subtitle line.',
+    id: 'proofreading',
+    label: 'Proofreading',
+    source: 'The patrol is on our heels. Head for the mill.',
+    machine: [
+      { text: 'Patrol ' },
+      { text: 'jest na naszych piętach', changed: true },
+      { text: '. ' },
+      { text: 'Kieruj się', changed: true },
+      { text: ' do młyna.' },
+    ],
+    corrected: [
+      { text: 'Patrol ' },
+      { text: 'depcze nam po piętach', changed: true },
+      { text: '. ' },
+      { text: 'Ruszaj', changed: true },
+      { text: ' do młyna.' },
+    ],
+    changes: [
+      '“Depcze nam po piętach” is the natural Polish idiom for “on our heels”.',
+      '“Ruszaj” carries the urgency of the command better than the neutral “kieruj się”.',
+    ],
   },
 ];
 

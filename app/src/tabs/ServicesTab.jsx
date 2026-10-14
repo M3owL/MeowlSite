@@ -44,7 +44,7 @@ export default function ServicesTab({ onNavigate }) {
       <section aria-labelledby="services-samples">
         <Reveal as="p" className="eyebrow">A closer look</Reveal>
         <Reveal as="h2" id="services-samples" className="mt-3 text-display-2">The choices behind the words.</Reveal>
-        <Reveal as="p" className="lead mt-4 max-w-2xl">Illustrative lines show how meaning, rhythm and context guide each Polish line.</Reveal>
+        <Reveal as="p" className="lead mt-4 max-w-2xl">Two illustrative examples: a finished translation and a simulated machine translation with the proofreading changes marked directly in the text.</Reveal>
         <Reveal className="mt-8"><SampleTranslation /></Reveal>
       </section>
 
