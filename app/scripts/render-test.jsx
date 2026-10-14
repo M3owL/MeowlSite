@@ -257,12 +257,19 @@ const portfolio = render(
 );
 expect('portfolio lists projects', portfolio, 'Stardew Valley', 'Second', 'Add Project');
 expect('portfolio offers three display modes', portfolio, 'Overview view', 'Cards view', 'List view');
+expect('default portfolio shows pinned feedback on projects', portfolio, 'Pinned reviews', 'Great work on the Polish localization.', 'Studio Dev', '★ 4.8');
 const overviewItem = render(
   'compact pinned project',
-  <ProjectIndexItem project={{ ...project, pinned: true, workScope: ['game_text'] }} view="overview" onExpand={noop} isAdmin={false} onEdit={noop} />,
+  <ProjectIndexItem project={{ ...project, pinned: true, workScope: ['game_text'] }} reviews={[review]} view="overview" onExpand={noop} isAdmin={false} onEdit={noop} />,
 );
 expect('overview preserves project identity and details action', overviewItem, 'Stardew Valley', 'Pinned', 'Details');
+expect('overview shows the pinned review', overviewItem, 'Pinned reviews', 'Studio Dev', 'Great work on the Polish localization.');
 expectNot('overview hides work-scope tags', overviewItem, 'In-game text &amp; narrative');
+expectNot(
+  'public overview hides unpublished pinned feedback',
+  render('compact project with unpublished feedback', <ProjectIndexItem project={project} reviews={[{ ...review, published: false }]} view="overview" onExpand={noop} isAdmin={false} />),
+  'Great work on the Polish localization.',
+);
 // pinned project must sort first regardless of sort_order
 if (portfolio.indexOf('Second') < portfolio.indexOf('Stardew Valley')) {
   passed += 1;
@@ -417,6 +424,7 @@ expect(
 );
 
 expect('about tab', render('AboutTab', <AboutTab />), 'Polish Game Translator');
+expect('services show LQA price and minimum', render('ServicesTab', <ServicesTab onNavigate={noop} />), 'Linguistic QA (LQA)', '$18', 'per hour', 'Minimum 1 hour');
 expect(
   'pinned reviews strip',
   render('PinnedReviews', <PinnedReviews reviews={[review]} />),

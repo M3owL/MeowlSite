@@ -47,7 +47,7 @@ export const ABOUT = {
   body: [
     'I am a Polish game translator working from English into Polish. I started working as a translator in late 2025 and I work with indie and mid-size studios.',
     'My work covers in-game text, UI strings, dialogue and subtitles. Proofreading is included with translation, along with an in-game text check when a playable build is available. I keep a glossary for every project so terminology stays consistent across patches and DLC.',
-    'Send me the files, the word count and the deadline, and you get a fixed price and a delivery date back. The portfolio shows what the work looks like in practice.',
+    'Send me the files, the word count or build access, and the deadline. I will send back a clear quote and delivery plan. The portfolio shows what the work looks like in practice.',
   ],
   /**
    * English into Polish only. Polish into English was on this list and was
@@ -95,6 +95,13 @@ export const SERVICES = [
     detail:
       'A second pass for accuracy, consistency and natural phrasing. Included at no extra charge when I translate the text; standalone proofreading is $0.008 per word.',
   },
+  {
+    id: 'lqa',
+    title: 'Linguistic QA (LQA)',
+    summary: 'A systematic language check inside a playable build.',
+    detail:
+      'I review Polish in context for cut-off strings, wrong terms, awkward phrasing and text that does not fit the moment. This is a separate service at $18 per hour, with a one-hour minimum.',
+  },
 ];
 
 export const PROCESS = [
@@ -106,7 +113,7 @@ export const PROCESS = [
   {
     step: '02',
     title: 'Quote',
-    detail: 'I come back with a fixed price and a delivery date. No hourly surprises.',
+    detail: 'I confirm the price and delivery plan before work starts. LQA is billed at $18 per hour, with a one-hour minimum.',
   },
   {
     step: '03',
@@ -121,7 +128,7 @@ export const PROCESS = [
   {
     step: '05',
     title: 'QA pass',
-    detail: 'Proofreading is included with translation. I also check the translated text in game when a playable build is available.',
+    detail: 'Proofreading and a basic in-game text check are included with translation when a playable build is available. Systematic LQA can be booked separately.',
   },
   {
     step: '06',
@@ -132,17 +139,18 @@ export const PROCESS = [
 
 // ------------------------------------------------------------ rates
 
-/** Proofreading is charged separately only when no translation is commissioned. */
+/** Translation includes proofreading and a basic in-game text check. */
 export const RATES = [
   { service: 'Localization, English to Polish', unit: 'per word', price: '$0.015', prefix: 'From' },
   { service: 'Standalone proofreading', unit: 'per word', price: '$0.008' },
+  { service: 'Linguistic QA (LQA)', unit: 'per hour', price: '$18', minimum: 'Minimum 1 hour' },
 ];
 
 export const RATE_NOTES = {
-  included: 'Proofreading is included with localization at no extra charge. An in-game text check is included when a playable build is available.',
+  included: 'Proofreading and a basic in-game text check are included with translation when a playable build is available. A systematic LQA pass is available separately.',
   model: [
-    'Per word for localization — the number you get is the number you pay.',
-    'Fixed price per project for anything that is not straight text.',
+    'Localization and standalone proofreading are priced per word.',
+    'LQA is $18 per hour with a one-hour minimum. I agree the scope with you before starting.',
   ],
   payment:
     'Payment by PayPal or bank transfer. If you need something else, ask — I am happy to work it out.',
@@ -189,7 +197,7 @@ export const SAMPLES = [
 export const CONTACT = {
   heading: 'Got a build that needs Polish?',
   intro:
-    'Send me the files, the deadline and a rough word count. You will get a fixed quote and a date, not a request for a call.',
+    'Send me the files or build access, your deadline and a rough word count if relevant. I will reply with a clear quote and delivery plan.',
   alternateEmail: 'meowl.translation@gmail.com',
   channels: [
     { id: 'email', label: 'Email', value: 'jacob@polishforgames.com', href: 'mailto:jacob@polishforgames.com' },

@@ -14,6 +14,7 @@ export default function RateCard({ onNavigate }) {
           <li key={rate.service} className="flex flex-wrap items-end justify-between gap-x-4 gap-y-1 py-4">
             <div>
               <p className="font-display text-body font-semibold text-ink">{rate.service}</p>
+              {rate.minimum && <p className="mt-0.5 text-caption text-faint">{rate.minimum}</p>}
             </div>
             <div className="text-right">
               {rate.prefix && <p className="text-caption text-faint">{rate.prefix}</p>}
@@ -30,7 +31,7 @@ export default function RateCard({ onNavigate }) {
       </div>
 
       <div className="border-t border-line px-6 py-5 sm:px-7">
-        <p className="text-caption leading-relaxed text-muted">Send the files, word count and deadline for a fixed project quote.</p>
+        <p className="text-caption leading-relaxed text-muted">Send the files or build access, scope and deadline for a quote.</p>
         <button type="button" className="btn-primary mt-4 w-full" onClick={() => onNavigate?.('contact')}>
           Request a quote <span aria-hidden="true">↗</span>
         </button>

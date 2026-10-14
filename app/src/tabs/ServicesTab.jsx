@@ -10,10 +10,10 @@ export default function ServicesTab({ onNavigate }) {
         <header className="pt-2 lg:pt-8">
           <p className="eyebrow">Services / EN → PL</p>
           <h2 id="services-heading" className="mt-5 max-w-xl text-display-1">Polish that belongs in your game.</h2>
-          <p className="lead mt-6 max-w-lg">Localization for story, dialogue and the interface, plus a careful second pass over Polish text you already have.</p>
+          <p className="lead mt-6 max-w-lg">English to Polish localization, standalone proofreading and linguistic QA inside your game.</p>
           <div className="mt-8 flex flex-wrap gap-x-6 gap-y-2 border-t border-line pt-5 text-caption text-faint">
             <span>English → Polish</span>
-            <span>Fixed project quote</span>
+            <span>Per-word and hourly rates</span>
           </div>
         </header>
         <RateCard onNavigate={onNavigate} />
@@ -27,7 +27,7 @@ export default function ServicesTab({ onNavigate }) {
         </div>
         <div className="mt-10 grid gap-x-10 gap-y-8 md:grid-cols-2">
           {SERVICES.map((service, index) => (
-            <Reveal key={service.id} as="article" index={index} className="border-t border-line-strong pt-5">
+            <Reveal key={service.id} as="article" index={index} className={`border-t border-line-strong pt-5 ${service.id === 'lqa' ? 'md:col-span-2' : ''}`}>
               <div className="flex items-start gap-5">
                 <span className="shrink-0 font-mono text-caption text-accent">0{index + 1}</span>
                 <div>

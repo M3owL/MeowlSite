@@ -24,9 +24,10 @@ const COPY = {
   fallbackPrefix: 'Discord handle:',
   sendList: [
     'The files, or a link to them — any format is fine.',
-    'A word count, even a rough one, so I can price the job.',
+    'For translation or proofreading, a word count, even a rough one.',
     'Your deadline, and whether it is a hard one.',
     'Screenshots or a line of context for anything the text cannot explain on its own.',
+    'For LQA, build access and the areas you want checked.',
   ],
 };
 

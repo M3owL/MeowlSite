@@ -1,11 +1,16 @@
 import SteamImage from './SteamImage';
 import { bannerCandidatesFor, parseSteamAppId } from '../lib/steam';
+import { calculateAverageRating } from '../lib/format';
 
 /** Short public summary used by the overview and list display modes. */
-export default function ProjectIndexItem({ project, view, onExpand, isAdmin, onEdit }) {
+export default function ProjectIndexItem({ project, reviews = [], view, onExpand, isAdmin, onEdit }) {
   const appId = parseSteamAppId(project.steamLink);
   const banners = bannerCandidatesFor({ customUrl: project.bg_url, appId });
   const isList = view === 'list';
+  const reviewsById = new Map(reviews.map((review) => [String(review.id), review]));
+  const pinnedReviews = (project.pinnedReviews || [])
+    .map((id) => reviewsById.get(String(id)))
+    .filter((review) => review && (isAdmin || review.published !== false));
   const fallback = (
     <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-surface-3 to-void font-display text-3xl text-accent/70" aria-hidden="true">
       {project.title?.charAt(0) || '•'}
@@ -50,6 +55,26 @@ export default function ProjectIndexItem({ project, view, onExpand, isAdmin, onE
           )}
           {isAdmin && <button type="button" onClick={() => onEdit(project)} className="text-muted transition-colors hover:text-accent">Edit</button>}
         </div>
+
+        {pinnedReviews.length > 0 && (
+          <div className="mt-3 w-full border-t border-line pt-3">
+            <p className="text-[10px] font-semibold uppercase tracking-wider text-accent">Pinned reviews</p>
+            <ul className="mt-2 space-y-2.5">
+              {pinnedReviews.map((review) => {
+                const rating = calculateAverageRating(review.ratings);
+                return (
+                  <li key={review.id} className="min-w-0 border-l-2 border-accent/50 pl-2.5">
+                    <p className="line-clamp-2 text-caption italic leading-snug text-ink/90">“{review.text}”</p>
+                    <div className="mt-1 flex items-center justify-between gap-2 text-[11px]">
+                      <span className="truncate font-medium text-muted">{review.nickname}</span>
+                      {rating > 0 && <span className="shrink-0 font-semibold text-amber-300" aria-label={`Rated ${rating.toFixed(1)} out of 5`}>★ {rating.toFixed(1)}</span>}
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        )}
       </div>
     </article>
   );

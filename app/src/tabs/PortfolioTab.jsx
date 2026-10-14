@@ -223,6 +223,7 @@ export default function PortfolioTab({
               <ProjectIndexItem
                 key={row.project.id}
                 project={row.project}
+                reviews={reviews}
                 view={viewMode}
                 isAdmin={isAdmin}
                 onEdit={openProjectModal}
